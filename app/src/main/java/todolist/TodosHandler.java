@@ -27,6 +27,10 @@ public class TodosHandler implements HttpHandler {
           System.out.println("POST: \n" + exchange);
           handlePost(exchange);
           break;
+        case "PATCH":
+          System.out.println("PATCH: \n" + exchange);
+          handlePatch(exchange);
+          break;
         case "DELETE":
           System.out.println("DELETE: \n" + exchange);
           handleDelete(exchange);
@@ -76,6 +80,52 @@ public class TodosHandler implements HttpHandler {
 
       byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
       exchange.sendResponseHeaders(201, responseBytes.length);
+      try (OutputStream os = exchange.getResponseBody()) {
+        os.write(responseBytes);
+      }
+    }
+  }
+
+  // PATCH，更新待辦事項
+  private void handlePatch(HttpExchange exchange) throws IOException {
+    if (todoList.isEmpty()) {
+      try (OutputStream os = exchange.getResponseBody()) {
+        byte[] responseBytes = "無待辦事項".getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(400, responseBytes.length);
+        os.write(responseBytes);
+      }
+      return;
+    }
+
+    String path = exchange.getRequestURI().getPath();
+    int todoId;
+    try {
+      todoId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
+    } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+      try (OutputStream os = exchange.getResponseBody()) {
+        byte[] responseBytes = "缺少 ID 參數或格式錯誤".getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(400, responseBytes.length);
+        os.write(responseBytes);
+      }
+      return;
+    }
+
+    if (todoId < 0 || todoList.get(todoId) == null) {
+      try (OutputStream os = exchange.getResponseBody()) {
+        byte[] responseBytes = "缺少 ID 參數 or 找不到該筆待辦事項".getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(404, responseBytes.length);
+        os.write(responseBytes);
+      }
+      return;
+    }
+
+    try (InputStream is = exchange.getRequestBody()) {
+      String requestBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+      todoList.set(todoId, requestBody);
+      String response = "已更新待辦事項: " + requestBody;
+
+      byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
+      exchange.sendResponseHeaders(200, responseBytes.length); // Use 200 for a successful update
       try (OutputStream os = exchange.getResponseBody()) {
         os.write(responseBytes);
       }
