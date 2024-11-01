@@ -14,6 +14,12 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
+- [ ] with [PostgreSQL](https://www.postgresql.org).
+
+- [ ] with [MongoDB](https://www.mongodb.com).
+
+- [ ] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
+
 ## Features
 
 1. GET: Retrieve the list of all to-do items.
@@ -62,3 +68,5 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 ## Licenses
 
 This project is licensed under the [MIT License](LICENSE).
+
+The third-party licenses used in this project are listed in [THIRD-PARTY-LICENSE](THIRD-PARTY-LICENSE)

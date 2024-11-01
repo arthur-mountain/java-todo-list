@@ -4,6 +4,14 @@
 guava = "33.2.1-jre"
 junit-jupiter = "5.10.3"
 
+# postgresql = "" # https://github.com/pgjdbc/pgjdbc
+# lettuce = "" # https://github.com/redis/lettuce
+# mongodb-driver-sync = "" # https://www.mongodb.com/docs/drivers/java/sync/current
+
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+
+# postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+# lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+# mongodbDriverSync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver-sync" }
