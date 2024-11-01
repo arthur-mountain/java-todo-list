@@ -145,6 +145,7 @@ public class TodosHandler implements HttpHandler {
 
     String query = exchange.getRequestURI().getQuery();
     Map<String, String> params = parseQuery(query);
+    // The id is actually mean the index of todoList
     String todoId = params.get("id");
 
     if (todoId == null) {
