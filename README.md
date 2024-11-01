@@ -21,14 +21,17 @@ The application allows users to manage their to-do items through a RESTful API, 
 ## Endpoints
 
 - **GET**: /todos
+
   Response: JSON array of to-do items.
 
 - **POST**: /todos
+
   Request Body: Plain text of the new to-do item.
 
   Response: Confirmation message.
 
 - **PATCH**: /todos/{id}
+
   Request Body: Plain text of the updated to-do item.
 
   Response: Confirmation message or error if ID is invalid.
