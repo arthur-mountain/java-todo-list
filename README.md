@@ -1,10 +1,18 @@
-# java-todo-list
+# Java To-Do List
 
-My first to-do list with Java implementation, using the built-in HTTP server from the `com.sun.net.httpserver` package.
+My first Java implementation with todo list.
 
-Before we start with Spring Boot, we need to understand the basics of how the HTTP server works in java.
+Using the built-in HTTP server from the `com.sun.net.httpserver` package, we will implement CRUD operations.
 
-The application allows users to manage their to-do items through a RESTful API, supporting operations such as creating, reading, updating, and deleting to-do items.
+Before we start with Spring Framework, we need to understand the basics of how the HTTP server works in Java.
+
+It supports operations such as **creating**, **reading**, **updating**, and **deleting** to-do items using a RESTful API.
+
+## TODOs
+
+- [x] CLI interactive to-do list using a variable-based, temporary in-memory storage.
+
+- [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
 ## Features
 
@@ -50,3 +58,7 @@ The application allows users to manage their to-do items through a RESTful API, 
 - 404 Not Found: Item not found based on provided ID.
 
 - 405 Method Not Allowed: Unsupported HTTP method.
+
+## Licenses
+
+This project is licensed under the [MIT License](LICENSE).
