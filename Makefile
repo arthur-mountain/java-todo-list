@@ -1,17 +1,20 @@
-PKG=$(word 2, $(MAKECMDGOALS))
-SRC_DIR=app/src/main/java/$(PKG)
-BIN_DIR=app/bin/main/java
-SOURCES=$(SRC_DIR)/*.java # Directly pass the wildcard pattern to javac.
-# SOURCES=$(wildcard $(SRC_DIR)/*.java) # Expand the wildcard pattern to a list of files as arguments for javac.
-MAIN_CLASS=$(PKG).$(word 3, $(MAKECMDGOALS))
+# 定義 JAR 檔案的名稱和路徑
+JAR_FILE=app/build/libs/app-all.jar
 
-all: compile
+all: build
 
-compile:
-	@echo "\033[33mCompiling Java files...\033[0m"
-	javac -d $(BIN_DIR) $(SOURCES)
-	@echo "\033[33mCompiled Java files...\n\033[0m"
+# 使用 gradlew 構建 Fat JAR
+build:
+	@echo "\033[33mBuilding the project with Gradle...\033[0m"
+	./gradlew fatJar
+	@echo "\033[33mBuild completed.\033[0m\n"
 
-run: compile
+# 檢查 JAR 檔案是否存在並運行
+run: build
 	@echo "\033[33mRunning the application...\033[0m"
-	java -cp $(BIN_DIR) $(MAIN_CLASS)
+	@if [ -f "$(JAR_FILE)" ]; then \
+	    java -jar "$(JAR_FILE)"; \
+	else \
+	    echo "Error: JAR file not found at $(JAR_FILE)"; \
+	    exit 1; \
+	fi

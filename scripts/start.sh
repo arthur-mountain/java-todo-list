@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
+set -e
 
-output="app/bin/main/java"
-input=("app/src/main/java/$1"/*.java)
+./gradlew fatJar
 
-javac "${input[@]}" -d "$output"
+JAR_FILE="app/build/libs/app-all.jar"
 
-java -cp "$output" "$1.$2"
+if [ -f "$JAR_FILE" ]; then
+  java -jar "$JAR_FILE"
+else
+  echo "Error: JAR file not found at $JAR_FILE"
+  exit 1
+fi
