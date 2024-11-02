@@ -13,6 +13,9 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
 
+    // Serialize json
+    implementation(libs.gson)
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -27,7 +30,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "todolist.App"
+    mainClass = "todolist.TodoListHttpServer"
 }
 
 tasks.named<Test>("test") {
