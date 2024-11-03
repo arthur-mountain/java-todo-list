@@ -94,6 +94,13 @@ public class TodoListHttpServerTest {
   }
 
   @Test
+  public void testGetTodo() throws Exception {
+    HttpURLConnection connection = createConnection("http://localhost:8080/todos/1");
+    assertEquals(200, connection.getResponseCode());
+    assertNotNull(new Gson().fromJson(readResponse(connection), TodoEntity.class).title);
+  }
+
+  @Test
   public void testPostTodo() throws Exception {
     HttpURLConnection connection = createConnection("http://localhost:8080/todos", "POST");
     connection.setDoOutput(true);

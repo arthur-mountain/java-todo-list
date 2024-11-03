@@ -24,7 +24,11 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 ## Features
 
-1. GET: Retrieve the list of all to-do items.
+1. GET:
+
+   - Retrieve the list of all to-do items.
+
+   - Retrieve the to-do item with id.
 
 2. POST: Add a new to-do item.
 
@@ -39,6 +43,10 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 - **GET**: /todos
 
   Response: JSON array of to-do items.
+
+- **GET**: /todo/$id
+
+  Response: JSON object of to-do item.
 
 - **POST**: /todos
 

@@ -72,12 +72,33 @@ public class TodoController implements HttpHandler {
     return str.getBytes(StandardCharsets.UTF_8);
   }
 
-  // GET，列出所有待辦事項
+  // GET，列出所有待辦事項 or 通過 ID 獲取單一待辦
   private void handleGet(HttpExchange exchange) throws IOException {
-    byte[] responseBytes = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
+    Integer todoId = null;
+    try {
+      String path = exchange.getRequestURI().getPath();
+      String _todoId = path.substring(path.lastIndexOf('/') + 1);
+      if (_todoId.matches("\\d+")) {
+        todoId = Integer.parseInt(_todoId);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      todoId = null;
+    }
+
+    System.out.println("todoId -> " + todoId);
 
     Headers headers = exchange.getResponseHeaders();
     headers.set("Content-Type", "application/json; charset=UTF-8");
+    byte[] responseBytes;
+    if (todoId == null) {
+      responseBytes = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
+    } else if (todoRepository.getTodoById(todoId).isPresent()) {
+      responseBytes = toJSON(todoRepository.getTodoById(todoId).get()).getBytes(StandardCharsets.UTF_8);
+    } else {
+      responseBytes = toJSON(new HashMap<>(Map.of("message", "Not found todo with id -> " + todoId)))
+          .getBytes(StandardCharsets.UTF_8);
+    }
 
     exchange.sendResponseHeaders(200, responseBytes.length);
     try (OutputStream os = exchange.getResponseBody()) {
