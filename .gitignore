@@ -30,6 +30,7 @@ out/
 # Environments
 .env*
 !.env.example
+*properties
 
 # Compiled class file
 *.class

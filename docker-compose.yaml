@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  todo-postgres:
+    image: $DB_IMAGE
+    container_name: todo-pg
+    tty: true
+    stdin_open: true
+    env_file: .env
+    volumes:
+      - ./database/migrations/init_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - $POSTGRES_CONTAINER_PORT:$POSTGRES_PORT
