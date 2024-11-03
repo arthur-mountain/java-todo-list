@@ -78,7 +78,7 @@ public class TodoRepository {
   public Optional<TodoEntity> createTodo(TodoEntity todo) {
     init_db_conn();
 
-    String query = "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)  RETURNING *";
+    String query = "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?) RETURNING *";
 
     try (PreparedStatement pstmt = conn.prepareStatement(query)) {
       pstmt.setString(1, todo.title);

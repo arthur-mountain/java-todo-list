@@ -74,14 +74,14 @@ public class TodoController implements HttpHandler {
 
   // GET，列出所有待辦事項
   private void handleGet(HttpExchange exchange) throws IOException {
-    byte[] response = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
+    byte[] responseBytes = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
 
     Headers headers = exchange.getResponseHeaders();
     headers.set("Content-Type", "application/json; charset=UTF-8");
 
-    exchange.sendResponseHeaders(200, response.length);
+    exchange.sendResponseHeaders(200, responseBytes.length);
     try (OutputStream os = exchange.getResponseBody()) {
-      os.write(response);
+      os.write(responseBytes);
     }
   }
 
@@ -167,9 +167,9 @@ public class TodoController implements HttpHandler {
 
   // DELETE，刪除指定的待辦事項
   private void handleDelete(HttpExchange exchange) throws IOException {
-    String path = exchange.getRequestURI().getPath();
     int todoId;
     try {
+      String path = exchange.getRequestURI().getPath();
       todoId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
     } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
       try (OutputStream os = exchange.getResponseBody()) {
