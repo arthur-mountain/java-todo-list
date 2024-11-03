@@ -14,7 +14,7 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
-- [] with [PostgreSQL](https://www.postgresql.org).
+- [x] with [PostgreSQL](https://www.postgresql.org).
 
   - [x] setup docker
 
