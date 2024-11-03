@@ -1,4 +1,4 @@
-package todolist;
+package todolist.entitys;
 
 public class TodoEntity {
   public int id;

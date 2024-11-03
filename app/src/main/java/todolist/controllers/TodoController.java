@@ -1,4 +1,4 @@
-package todolist;
+package todolist.controllers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
@@ -12,10 +12,12 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import todolist.entitys.TodoEntity;
+import todolist.repositories.TodoRepository;
 
-public class TodosHandler implements HttpHandler {
+public class TodoController implements HttpHandler {
 
-  private static final TodosRepository todosRepository = new TodosRepository();
+  private static final TodoRepository todoRepository = new TodoRepository();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
@@ -68,7 +70,7 @@ public class TodosHandler implements HttpHandler {
 
   // GET，列出所有待辦事項
   private void handleGet(HttpExchange exchange) throws IOException {
-    byte[] response = toJSON(todosRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
+    byte[] response = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
 
     Headers headers = exchange.getResponseHeaders();
     headers.set("Content-Type", "application/json; charset=UTF-8");
@@ -82,7 +84,7 @@ public class TodosHandler implements HttpHandler {
   // POST，新增待辦事項
   private void handlePost(HttpExchange exchange) throws IOException {
     try (InputStream input = exchange.getRequestBody()) {
-      Optional<TodoEntity> createdTodo = todosRepository
+      Optional<TodoEntity> createdTodo = todoRepository
           .createTodo(fromJSON(new String(input.readAllBytes(), StandardCharsets.UTF_8), TodoEntity.class));
 
       byte[] responseBytes;
@@ -123,7 +125,7 @@ public class TodosHandler implements HttpHandler {
       return;
     }
 
-    if (!todosRepository.getTodoById(todoId).isPresent()) {
+    if (!todoRepository.getTodoById(todoId).isPresent()) {
       try (OutputStream os = exchange.getResponseBody()) {
         byte[] responseBytes = "缺少 ID 參數 or 找不到該筆待辦事項".getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(404, responseBytes.length);
@@ -133,7 +135,7 @@ public class TodosHandler implements HttpHandler {
     }
 
     try (InputStream input = exchange.getRequestBody()) {
-      Optional<TodoEntity> updatedTodo = todosRepository.updateTodo(todoId,
+      Optional<TodoEntity> updatedTodo = todoRepository.updateTodo(todoId,
           fromJSON(new String(input.readAllBytes(), StandardCharsets.UTF_8), TodoEntity.class));
 
       byte[] responseBytes;
@@ -174,7 +176,7 @@ public class TodosHandler implements HttpHandler {
     }
 
     try (OutputStream os = exchange.getResponseBody()) {
-      Optional<TodoEntity> deletedTodo = todosRepository.deleteTodo(todoId);
+      Optional<TodoEntity> deletedTodo = todoRepository.deleteTodo(todoId);
 
       byte[] responseBytes;
       if (deletedTodo.isPresent()) {

@@ -1,4 +1,4 @@
-package todolist;
+package todolist.repositories;
 
 import java.sql.*;
 import java.io.IOException;
@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import todolist.entitys.TodoEntity;
 
-public class TodosRepository {
+public class TodoRepository {
   private static Connection conn;
 
   private static void init_db_conn() {
@@ -18,7 +19,7 @@ public class TodosRepository {
 
     // Load the database properties
     Properties properties = new Properties();
-    try (InputStream input = TodosRepository.class.getClassLoader().getResourceAsStream("db.properties")) {
+    try (InputStream input = TodoRepository.class.getClassLoader().getResourceAsStream("db.properties")) {
       if (input == null) {
         System.out.println("Sorry, unable to find dbconfig.properties");
       } else {
