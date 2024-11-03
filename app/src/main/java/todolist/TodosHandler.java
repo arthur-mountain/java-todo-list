@@ -1,5 +1,7 @@
 package todolist;
 
+import com.google.gson.Gson;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
@@ -43,38 +45,41 @@ public class TodosHandler implements HttpHandler {
       // Ensure HttpExchange 中的 InputStream 和 OutputStream 資源被釋放
       exchange.close();
     }
+  }
 
+  // unused actually just for see binary of string
+  static void printBinary(String str) {
+    System.out.println("original string -> " + str);
+    StringBuilder binaryString = new StringBuilder();
+    for (byte b : str.getBytes()) {
+      binaryString.append(String.format("%8s", Integer.toBinaryString(b &
+          0xFF)).replace(' ', '0'));
+    }
+    System.out.println("binary string -> " + binaryString.toString());
+  }
+
+  private <T> String toJSON(T values) {
+    Gson gson = new Gson();
+    return gson.toJson(values);
   }
 
   // GET，列出所有待辦事項
   private void handleGet(HttpExchange exchange) throws IOException {
-    StringBuilder response = new StringBuilder("[");
-    for (int i = 0; i < todoList.size(); i++) {
-      response.append("\"").append(todoList.get(i)).append("\"");
-      if (i < todoList.size() - 1) {
-        response.append(",");
-      }
-    }
-    response.append("]");
+    byte[] response = toJSON(todoList).getBytes(StandardCharsets.UTF_8);
 
-    byte[] responseBytes = response.toString().getBytes(StandardCharsets.UTF_8);
-    // System.out.println("responseBytes: " + responseBytes);
-    // StringBuilder binaryString = new StringBuilder();
-    // for (byte b : responseBytes) {
-    // binaryString.append(String.format("%8s", Integer.toBinaryString(b &
-    // 0xFF)).replace(' ', '0'));
-    // }
-    // System.out.println("binaryString: " + binaryString.toString());
-    exchange.sendResponseHeaders(200, responseBytes.length);
+    Headers headers = exchange.getResponseHeaders();
+    headers.set("Content-Type", "application/json; charset=UTF-8");
+
+    exchange.sendResponseHeaders(200, response.length);
     try (OutputStream os = exchange.getResponseBody()) {
-      os.write(responseBytes);
+      os.write(response);
     }
   }
 
   // POST，新增待辦事項
   private void handlePost(HttpExchange exchange) throws IOException {
-    try (InputStream is = exchange.getRequestBody()) {
-      String requestBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+    try (InputStream input = exchange.getRequestBody()) {
+      String requestBody = new String(input.readAllBytes(), StandardCharsets.UTF_8);
       todoList.add(requestBody);
       String response = "已新增待辦事項: " + requestBody;
 
@@ -119,8 +124,8 @@ public class TodosHandler implements HttpHandler {
       return;
     }
 
-    try (InputStream is = exchange.getRequestBody()) {
-      String requestBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+    try (InputStream input = exchange.getRequestBody()) {
+      String requestBody = new String(input.readAllBytes(), StandardCharsets.UTF_8);
       todoList.set(todoId, requestBody);
       String response = "已更新待辦事項: " + requestBody;
 

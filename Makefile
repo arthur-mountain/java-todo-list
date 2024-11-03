@@ -18,3 +18,8 @@ run: build
 	    echo "Error: JAR file not found at $(JAR_FILE)"; \
 	    exit 1; \
 	fi
+
+test:
+	@echo "\033[33mRunning test with Gradle...\033[0m"
+	./gradlew test
+	@echo "\033[33mRunning test completed.\033[0m\n"

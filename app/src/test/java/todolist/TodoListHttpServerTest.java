@@ -1,19 +1,22 @@
 package todolist;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -82,7 +85,7 @@ public class TodoListHttpServerTest {
     connection.setRequestMethod("GET");
 
     assertEquals(200, connection.getResponseCode());
-    assertEquals("[]", readResponse(connection));
+    assertEquals(new Gson().toJson(new String[] {}), readResponse(connection));
   }
 
   @Test
@@ -92,7 +95,7 @@ public class TodoListHttpServerTest {
     connection.setRequestMethod("POST");
     connection.setDoOutput(true);
 
-    String newTodo = "{\"name\": \"test\"}";
+    String newTodo = new Gson().toJson(new HashMap<>(Map.of("name", "test")));
     try (OutputStream os = connection.getOutputStream()) {
       os.write(newTodo.getBytes(StandardCharsets.UTF_8));
     }
@@ -113,7 +116,7 @@ public class TodoListHttpServerTest {
     connection.setRequestMethod("GET");
 
     assertEquals(200, connection.getResponseCode());
-    assertEquals("[\"" + createdTodo + "\"]", readResponse(connection));
+    assertEquals(new Gson().toJson(new String[] { createdTodo }), readResponse(connection));
   }
 
   // HttpURLConnection not support PATCH method, even if there has a workaround.
@@ -166,6 +169,6 @@ public class TodoListHttpServerTest {
     getConnection.setRequestMethod("GET");
 
     assertEquals(200, getConnection.getResponseCode());
-    assertEquals("[]", readResponse(getConnection));
+    assertEquals(new Gson().toJson(new String[] {}), readResponse(getConnection));
   }
 }
