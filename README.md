@@ -59,6 +59,12 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
   P.S. Prefer using /todos/{id},
   but this is just for practicing parsing the query string.
 
+## Success Response
+
+- 200 Success.
+
+- 201 Created: New item added successfully.
+
 ## Error Handling
 
 - 400 Bad Request: Missing parameters or invalid input.

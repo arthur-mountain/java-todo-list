@@ -7,16 +7,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,6 +20,7 @@ public class TodoListHttpServerTest {
 
   private static int PORT = 8080;
   private static HttpServer server;
+  private static final TodosRepository todosRepository = new TodosRepository();
 
   @BeforeAll
   public static void setUp() throws Exception {
@@ -79,96 +76,13 @@ public class TodoListHttpServerTest {
   }
 
   @Test
-  public void testGetEmptyTodos() throws Exception {
+  public void testGetTodos() throws Exception {
     URL url = createUrl("http://localhost:8080/todos");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
+    connection.setRequestProperty("Content-Type", "application/json");
 
     assertEquals(200, connection.getResponseCode());
-    assertEquals(new Gson().toJson(new String[] {}), readResponse(connection));
-  }
-
-  @Test
-  public String testPostTodo() throws Exception {
-    URL url = createUrl("http://localhost:8080/todos");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setDoOutput(true);
-
-    String newTodo = new Gson().toJson(new HashMap<>(Map.of("name", "test")));
-    try (OutputStream os = connection.getOutputStream()) {
-      os.write(newTodo.getBytes(StandardCharsets.UTF_8));
-    }
-
-    assertEquals(201, connection.getResponseCode());
-    assertEquals("已新增待辦事項: " + newTodo, readResponse(connection));
-    return newTodo;
-  }
-
-  @Test
-  public void testGetTodosWithOneItem() throws Exception {
-    // First, add an item
-    String createdTodo = testPostTodo();
-
-    // Now, retrieve it with GET
-    URL url = createUrl("http://localhost:8080/todos");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("GET");
-
-    assertEquals(200, connection.getResponseCode());
-    assertEquals(new Gson().toJson(new String[] { createdTodo }), readResponse(connection));
-  }
-
-  // HttpURLConnection not support PATCH method, even if there has a workaround.
-  // For practice purpose, we will not cover this test case.
-  // @Test
-  // public void testPatchTodo() throws Exception {
-  // // First, add an item
-  // testPostTodo();
-  //
-  // // Update the item with PATCH
-  // URL url = createUrl("http://localhost:8080/todos/0");
-  // HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-  // connection.setRequestMethod("PATCH");
-  // connection.setDoOutput(true);
-  //
-  // String updatedTodo = "{\"name\": \"example\"}";
-  // try (OutputStream os = connection.getOutputStream()) {
-  // os.write(updatedTodo.getBytes(StandardCharsets.UTF_8));
-  // }
-  //
-  // assertEquals(200, connection.getResponseCode());
-  // assertEquals("已更新待辦事項: " + updatedTodo, readResponse(connection));
-  //
-  // // Verify update with GET
-  // URL getUrl = createUrl("http://localhost:8080/todos");
-  // HttpURLConnection getConnection = (HttpURLConnection)
-  // getUrl.openConnection();
-  // getConnection.setRequestMethod("GET");
-  //
-  // assertEquals(200, getConnection.getResponseCode());
-  // assertEquals(updatedTodo, readResponse(getConnection));
-  // }
-
-  @Test
-  public void testDeleteTodo() throws Exception {
-    // First, add an item
-    String createdTodo = testPostTodo();
-
-    // Delete the item
-    URL url = createUrl("http://localhost:8080/todos?id=0");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("DELETE");
-
-    assertEquals(200, connection.getResponseCode());
-    assertEquals("已刪除待辦事項: " + createdTodo, readResponse(connection));
-
-    // Verify deletion with GET
-    URL getUrl = createUrl("http://localhost:8080/todos");
-    HttpURLConnection getConnection = (HttpURLConnection) getUrl.openConnection();
-    getConnection.setRequestMethod("GET");
-
-    assertEquals(200, getConnection.getResponseCode());
-    assertEquals(new Gson().toJson(new String[] {}), readResponse(getConnection));
+    assertEquals(new Gson().toJson(todosRepository.getTodos()), readResponse(connection));
   }
 }

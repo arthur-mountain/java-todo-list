@@ -16,6 +16,9 @@ dependencies {
     // Serialize json
     implementation(libs.gson)
 
+    // Postgresql JDBC driver
+    implementation(libs.postgresql)
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
