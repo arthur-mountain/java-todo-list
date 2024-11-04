@@ -91,6 +91,11 @@ public class TodoListHttpServerTest {
     HttpURLConnection connection = createConnection("http://localhost:8080/todos");
     assertEquals(200, connection.getResponseCode());
     assertEquals(new Gson().toJson(todosRepository.getTodos()), readResponse(connection));
+
+    connection = createConnection("http://localhost:8080/todos?page=1&per_page=2");
+    assertEquals(200, connection.getResponseCode());
+    assertEquals(new Gson().toJson(todosRepository.getTodos(Map.of("page", "1", "per_page", "2"))),
+        readResponse(connection));
   }
 
   @Test

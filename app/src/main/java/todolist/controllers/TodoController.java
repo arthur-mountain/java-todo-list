@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+import java.nio.charset.StandardCharsets;
+import java.net.URLDecoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
@@ -92,14 +93,17 @@ public class TodoController implements HttpHandler {
     headers.set("Content-Type", "application/json; charset=UTF-8");
     byte[] responseBytes;
     if (todoId == null) {
-      responseBytes = toJSON(todoRepository.getTodos()).getBytes(StandardCharsets.UTF_8);
-    } else if (todoRepository.getTodoById(todoId).isPresent()) {
-      responseBytes = toJSON(todoRepository.getTodoById(todoId).get()).getBytes(StandardCharsets.UTF_8);
-    } else {
-      responseBytes = toJSON(new HashMap<>(Map.of("message", "Not found todo with id -> " + todoId)))
+      responseBytes = toJSON(todoRepository.getTodos(parseQuery(exchange.getRequestURI().getQuery())))
           .getBytes(StandardCharsets.UTF_8);
+    } else {
+      Optional<TodoEntity> todo = todoRepository.getTodoById(todoId);
+      if (todo.isPresent()) {
+        responseBytes = toJSON(todo.get()).getBytes(StandardCharsets.UTF_8);
+      } else {
+        responseBytes = toJSON(new HashMap<>(Map.of("message", "Not found todo with id -> " + todoId)))
+            .getBytes(StandardCharsets.UTF_8);
+      }
     }
-
     exchange.sendResponseHeaders(200, responseBytes.length);
     try (OutputStream os = exchange.getResponseBody()) {
       os.write(responseBytes);
@@ -223,19 +227,19 @@ public class TodoController implements HttpHandler {
   // String query = exchange.getRequestURI().getQuery();
   // Map<String, String> params = parseQuery(query);
   // String todoId = params.get("id");
-  static Map<String, String> parseQuery(String query) {
+  public static Map<String, String> parseQuery(String query) {
     Map<String, String> params = new HashMap<>();
 
-    if (query == null) {
+    if (query == null || query.isEmpty()) {
       return params;
     }
 
     String[] pairs = query.split("&");
     for (String pair : pairs) {
-      String[] keyValue = pair.split("=");
-      if (keyValue.length == 2) {
-        params.put(keyValue[0], keyValue[1]);
-      }
+      String[] keyValue = pair.split("=", 2); // Limit split to 2 parts
+      String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+      String value = keyValue.length > 1 ? URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8) : "";
+      params.put(key, value);
     }
 
     return params;

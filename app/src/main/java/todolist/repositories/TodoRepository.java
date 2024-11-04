@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import todolist.entitys.TodoEntity;
@@ -100,18 +101,44 @@ public class TodoRepository {
   }
 
   // Get todos
+  private final int parsePaginationOrDefault(Map<String, String> params, String key, int defaultValue) {
+    String value = params.getOrDefault(key, String.valueOf(defaultValue));
+    try {
+      int parsedValue = Integer.parseInt(value);
+      if (parsedValue > 0) {
+        return parsedValue;
+      } else {
+        System.out.println(key + " should be a positive integer. Using default value: " + defaultValue);
+        return defaultValue;
+      }
+    } catch (NumberFormatException e) {
+      System.out.println("Invalid format for " + key + ": " + value + ". Using default value: " + defaultValue);
+      return defaultValue;
+    }
+  }
+
   public List<TodoEntity> getTodos() {
+    return getTodos(Map.of());
+  }
+
+  public List<TodoEntity> getTodos(Map<String, String> params) {
     init_db_conn();
+
     List<TodoEntity> todos = new ArrayList<>();
 
-    String query = "SELECT * FROM todos";
+    int page = parsePaginationOrDefault(params, "page", 1);
+    int perPage = parsePaginationOrDefault(params, "per_page", 10);
+    int offset = (page - 1) * perPage;
+    String query = "SELECT * FROM todos LIMIT ? OFFSET ?";
 
-    try (Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query)) {
-
-      while (rs.next()) {
-        todos.add(new TodoEntity(rs.getInt("id"), rs.getString("title"), rs.getString("description"),
-            rs.getBoolean("completed")));
+    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+      pstmt.setInt(1, perPage);
+      pstmt.setInt(2, offset);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+          todos.add(new TodoEntity(rs.getInt("id"), rs.getString("title"), rs.getString("description"),
+              rs.getBoolean("completed")));
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();
