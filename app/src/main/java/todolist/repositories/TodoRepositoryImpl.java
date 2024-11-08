@@ -1,88 +1,27 @@
 package todolist.repositories;
 
 import java.sql.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import todolist.entities.TodoEntity;
+import todolist.utils.database.DatabaseManager;
 
 public class TodoRepositoryImpl implements TodoRepository {
-  private static Connection conn;
+  private final DatabaseManager databaseManager;
 
-  private static void init_db_conn() {
-    if (conn != null) {
-      return;
-    }
-
-    // Load the database properties
-    Properties properties = new Properties();
-    try (InputStream input = TodoRepository.class.getClassLoader().getResourceAsStream("db.properties")) {
-      if (input == null) {
-        System.out.println("Sorry, unable to find dbconfig.properties");
-      } else {
-        properties.load(input);
-      }
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    }
-
-    // Database URL
-    String url = properties.getProperty("db.url");
-
-    // Database credentials
-    String user = properties.getProperty("db.user");
-    String password = properties.getProperty("db.password");
-
-    if (url == null || user == null || password == null) {
-      System.out.println("Database configuration is not set.");
-      return;
-    }
-
-    // Connect to the database
-    try {
-      conn = DriverManager.getConnection(url, user, password);
-      System.out.println("Connected to the PostgreSQL server successfully.");
-
-      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-        try {
-          if (conn != null && !conn.isClosed()) {
-            conn.close();
-            System.out.println("Database connection closed.");
-          }
-        } catch (SQLException e) {
-          System.out.println("Failed to closed to PostgreSQL.");
-          e.printStackTrace();
-        }
-      }));
-    } catch (SQLException e) {
-      System.out.println("Failed to connect to PostgreSQL.");
-      e.printStackTrace();
-    }
-    // finally {
-    // // Close the connection when done
-    // if (conn != null) {
-    // try {
-    // conn.close();
-    // System.out.println("Connection closed.");
-    // } catch (SQLException ex) {
-    // ex.printStackTrace();
-    // }
-    // }
-    // }
+  // 注入 DatabaseManager
+  public TodoRepositoryImpl(DatabaseManager databaseManager) {
+    this.databaseManager = databaseManager;
   }
 
   // Create todo
   @Override
   public Optional<TodoEntity> createTodo(TodoEntity todo) {
-    init_db_conn();
-
     String query = "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?) RETURNING *";
 
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(query)) {
       pstmt.setString(1, todo.title);
       pstmt.setString(2, todo.description);
       pstmt.setBoolean(3, todo.completed);
@@ -125,8 +64,6 @@ public class TodoRepositoryImpl implements TodoRepository {
 
   @Override
   public List<TodoEntity> getTodos(Map<String, String> params) {
-    init_db_conn();
-
     List<TodoEntity> todos = new ArrayList<>();
 
     int page = parsePaginationOrDefault(params, "page", 1);
@@ -134,7 +71,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     int offset = (page - 1) * perPage;
     String query = "SELECT * FROM todos LIMIT ? OFFSET ?";
 
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(query)) {
       pstmt.setInt(1, perPage);
       pstmt.setInt(2, offset);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -153,11 +90,9 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Get todo by id
   @Override
   public Optional<TodoEntity> getTodoById(int todoId) {
-    init_db_conn();
-
     String query = "SELECT * FROM todos where id = ?";
 
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(query)) {
       pstmt.setInt(1, todoId);
       try (ResultSet rs = pstmt.executeQuery()) {
         return rs.next()
@@ -175,11 +110,9 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Update todo;
   @Override
   public Optional<TodoEntity> updateTodo(int todoId, TodoEntity todo) {
-    init_db_conn();
-
     String query = "UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?";
 
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(query)) {
       pstmt.setString(1, todo.title);
       pstmt.setString(2, todo.description);
       pstmt.setBoolean(3, todo.completed);
@@ -202,8 +135,6 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Delete todo
   @Override
   public Optional<TodoEntity> deleteTodo(int todoId) {
-    init_db_conn();
-
     // 查詢待刪除的記錄
     Optional<TodoEntity> optionalTodo = getTodoById(todoId);
     if (!optionalTodo.isPresent()) {
@@ -213,7 +144,7 @@ public class TodoRepositoryImpl implements TodoRepository {
 
     String query = "DELETE FROM todos WHERE id = ?";
 
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    try (PreparedStatement pstmt = databaseManager.getConnection().prepareStatement(query)) {
       pstmt.setInt(1, todoId);
 
       // 刪除成功，返回被刪除的 TodoEntity otherwise return empty optional

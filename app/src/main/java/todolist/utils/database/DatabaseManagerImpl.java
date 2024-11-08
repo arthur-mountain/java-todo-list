@@ -46,8 +46,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
         System.out.println("Sorry, unable to find db.properties");
         throw new RuntimeException("Database configuration is not set.");
       }
-      properties.load(input);
 
+      properties.load(input);
       url = properties.getProperty("db.url");
       username = properties.getProperty("db.user");
       password = properties.getProperty("db.password");
@@ -84,7 +84,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
     healthCheckTimer.schedule(new TimerTask() {
       @Override
       public void run() {
-        // 這要把 DatabaseManagerImpl 鎖住
+        // 這會把 DatabaseManagerImpl 鎖住，避免其他 Thread執行此 class
+        // 但是鎖整個，優化方式是可以在鎖細粒杜小一點得地方，而非整個 class
+        // 可以參考 implementation v1 and v2
         synchronized (DatabaseManagerImpl.this) {
           connectionPool.removeIf(conn -> {
             try {

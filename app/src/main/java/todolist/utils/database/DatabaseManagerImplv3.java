@@ -23,7 +23,7 @@ public class DatabaseManagerImplv3 implements DatabaseManager {
     loadDatabaseConfig();
     connectionPool = new LinkedBlockingQueue<>(MAX_POOL_SIZE);
 
-    // 初始化連線池
+    // 初始化 connect pool
     for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
       connectionPool.add(createConnection());
     }
@@ -36,8 +36,8 @@ public class DatabaseManagerImplv3 implements DatabaseManager {
         System.out.println("Sorry, unable to find db.properties");
         throw new RuntimeException("Database configuration is not set.");
       }
-      properties.load(input);
 
+      properties.load(input);
       url = properties.getProperty("db.url");
       username = properties.getProperty("db.user");
       password = properties.getProperty("db.password");
@@ -60,10 +60,20 @@ public class DatabaseManagerImplv3 implements DatabaseManager {
     }
   }
 
+  private void closeConnection(Connection connection) {
+    try {
+      if (connection != null && !connection.isClosed()) {
+        connection.close();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   @Override
   public Connection getConnection() {
     try {
-      // 如果沒有可用連線，則等待直到有可用的連線
+      // connectionPool.take -> 如果沒有可用連線，則等待(blocked)直到有可用的連線
       return connectionPool.take();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -96,15 +106,5 @@ public class DatabaseManagerImplv3 implements DatabaseManager {
     // 關閉所有連線
     connectionPool.forEach(this::closeConnection);
     connectionPool.clear();
-  }
-
-  private void closeConnection(Connection connection) {
-    try {
-      if (connection != null && !connection.isClosed()) {
-        connection.close();
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
   }
 }

@@ -14,11 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import todolist.entities.TodoEntity;
-import todolist.repositories.TodoRepositoryImpl;
+import todolist.repositories.TodoRepository;
 
 public class TodoController implements HttpHandler {
+  private final TodoRepository todoRepository;
 
-  private final TodoRepositoryImpl todoRepository = new TodoRepositoryImpl();
+  public TodoController(TodoRepository todoRepository) {
+    this.todoRepository = todoRepository;
+  }
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {

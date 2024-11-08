@@ -23,6 +23,7 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
 
   public DatabaseManagerImplv2() {
     loadDatabaseConfig();
+    // Diff with v1, 使用 synchronized list 來實作 connectionPool 和 usedConnections
     connectionPool = Collections.synchronizedList(new ArrayList<>());
     usedConnections = Collections.synchronizedList(new ArrayList<>());
 
@@ -38,8 +39,8 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
         System.out.println("Sorry, unable to find db.properties");
         throw new RuntimeException("Database configuration is not set.");
       }
-      properties.load(input);
 
+      properties.load(input);
       url = properties.getProperty("db.url");
       username = properties.getProperty("db.user");
       password = properties.getProperty("db.password");

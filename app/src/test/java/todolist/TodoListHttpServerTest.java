@@ -22,13 +22,15 @@ import java.io.OutputStream;
 
 import todolist.controllers.TodoController;
 import todolist.entities.TodoEntity;
+import todolist.utils.database.DatabaseManagerImpl;
+import todolist.repositories.TodoRepository;
 import todolist.repositories.TodoRepositoryImpl;
 
 public class TodoListHttpServerTest {
 
   private static int PORT = 8080;
   private static HttpServer server;
-  private static final TodoRepositoryImpl todosRepository = new TodoRepositoryImpl();
+  private static TodoRepository todosRepository;
 
   @BeforeAll
   public static void setUp() throws Exception {
@@ -41,7 +43,8 @@ public class TodoListHttpServerTest {
       PORT = 8080;
     }
     server = HttpServer.create(new InetSocketAddress(PORT), 0);
-    server.createContext("/todos", new TodoController());
+    todosRepository = new TodoRepositoryImpl(new DatabaseManagerImpl());
+    server.createContext("/todos", new TodoController(todosRepository));
     server.setExecutor(null); // creates a default executor
     server.start();
     Thread.sleep(300); // Adjust the delay if needed
