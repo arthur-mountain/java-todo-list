@@ -13,12 +13,12 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import todolist.entitys.TodoEntity;
-import todolist.repositories.TodoRepository;
+import todolist.entities.TodoEntity;
+import todolist.repositories.TodoRepositoryImpl;
 
 public class TodoController implements HttpHandler {
 
-  private static final TodoRepository todoRepository = new TodoRepository();
+  private final TodoRepositoryImpl todoRepository = new TodoRepositoryImpl();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {

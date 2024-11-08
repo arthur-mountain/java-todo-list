@@ -21,14 +21,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import todolist.controllers.TodoController;
-import todolist.entitys.TodoEntity;
-import todolist.repositories.TodoRepository;
+import todolist.entities.TodoEntity;
+import todolist.repositories.TodoRepositoryImpl;
 
 public class TodoListHttpServerTest {
 
   private static int PORT = 8080;
   private static HttpServer server;
-  private static final TodoRepository todosRepository = new TodoRepository();
+  private static final TodoRepositoryImpl todosRepository = new TodoRepositoryImpl();
 
   @BeforeAll
   public static void setUp() throws Exception {
