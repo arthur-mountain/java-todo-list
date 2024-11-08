@@ -33,7 +33,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "todolist.TodoListHttpServer"
+    mainClass = "todolist.App"
 }
 
 tasks.named<Test>("test") {
@@ -52,7 +52,7 @@ tasks.register<Jar>("fatJar") {
     from(sourceSets.main.get().output)
 
     manifest { // 設定清單（Manifest）內容
-        attributes["Main-Class"] = "todolist.TodoListHttpServer" // 設定 Main class
+        attributes["Main-Class"] = "todolist.App" // 設定 Main class
     }
 
     // 依賴於運行時類路徑
