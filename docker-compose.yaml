@@ -13,3 +13,15 @@ services:
       - $POSTGRES_VOLUME3
     ports:
       - $POSTGRES_CONTAINER_PORT:$POSTGRES_PORT
+
+  todo-mongo:
+    image: $MONGODB_IMAGE
+    container_name: todo-mongo
+    tty: true
+    stdin_open: true
+    env_file: .env
+    volumes:
+      - $MONGODB_VOLUME1
+      - $MONGODB_VOLUME2
+    ports:
+      - $MONGODB_CONTAINER_PORT:$MONGODB_PORT
