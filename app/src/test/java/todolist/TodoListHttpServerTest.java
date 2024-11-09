@@ -91,11 +91,11 @@ public class TodoListHttpServerTest {
 
   @Test
   public void testGetTodos() throws Exception {
-    HttpURLConnection connection = createConnection("http://localhost:8080/todos");
+    HttpURLConnection connection = createConnection("http://localhost:8080/v1/todos");
     assertEquals(200, connection.getResponseCode());
     assertEquals(new Gson().toJson(todosRepository.getTodos()), readResponse(connection));
 
-    connection = createConnection("http://localhost:8080/todos?page=1&per_page=2");
+    connection = createConnection("http://localhost:8080/v1/todos?page=1&per_page=2");
     assertEquals(200, connection.getResponseCode());
     assertEquals(new Gson().toJson(todosRepository.getTodos(Map.of("page", "1", "per_page", "2"))),
         readResponse(connection));
@@ -103,14 +103,14 @@ public class TodoListHttpServerTest {
 
   @Test
   public void testGetTodo() throws Exception {
-    HttpURLConnection connection = createConnection("http://localhost:8080/todos/1");
+    HttpURLConnection connection = createConnection("http://localhost:8080/v1/todos/1");
     assertEquals(200, connection.getResponseCode());
     assertNotNull(new Gson().fromJson(readResponse(connection), TodoEntity.class).title);
   }
 
   @Test
   public void testPostTodo() throws Exception {
-    HttpURLConnection connection = createConnection("http://localhost:8080/todos", "POST");
+    HttpURLConnection connection = createConnection("http://localhost:8080/v1/todos", "POST");
     connection.setDoOutput(true);
 
     String newTodo = new Gson().toJson(new HashMap<>(Map.of("title", "test")));
@@ -132,7 +132,7 @@ public class TodoListHttpServerTest {
   public void testDeleteTodo() throws Exception {
     List<TodoEntity> todos = todosRepository.getTodos();
     TodoEntity lastTodo = todos.get(todos.size() - 1);
-    HttpURLConnection connection = createConnection("http://localhost:8080/todos/" + lastTodo.id, "DELETE");
+    HttpURLConnection connection = createConnection("http://localhost:8080/v1/todos/" + lastTodo.id, "DELETE");
 
     assertEquals(200, connection.getResponseCode());
 
