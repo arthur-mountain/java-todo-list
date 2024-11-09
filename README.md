@@ -18,7 +18,7 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
   - [x] setup docker
 
-- [ ] with [MongoDB](https://www.mongodb.com).
+- [x] with [MongoDB](https://www.mongodb.com).
 
 - [ ] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
 
