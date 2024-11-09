@@ -71,10 +71,10 @@ public class DatabaseManagerImplv3 implements DatabaseManager {
   }
 
   @Override
-  public Connection getConnection() {
+  public DatabaseConnection getConnection() {
     try {
       // connectionPool.take -> 如果沒有可用連線，則等待(blocked)直到有可用的連線
-      return connectionPool.take();
+      return new DatabaseConnection(connectionPool.take(), this);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new RuntimeException("Interrupted while waiting for a connection from the pool.", e);

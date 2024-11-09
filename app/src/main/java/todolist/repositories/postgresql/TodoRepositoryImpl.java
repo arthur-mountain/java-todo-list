@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import todolist.entities.TodoEntity;
 import todolist.utils.database.DatabaseManager;
+import todolist.utils.database.DatabaseConnection;
 
 public class TodoRepositoryImpl implements TodoRepository {
   private final DatabaseManager databaseManager;
@@ -19,17 +20,10 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Create todo
   @Override
   public Optional<TodoEntity> createTodo(TodoEntity todo) {
-    Connection connection;
-    try {
-      connection = databaseManager.getConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
-
     String query = "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?) RETURNING *";
 
-    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+    try (DatabaseConnection connection = databaseManager.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, todo.title);
       pstmt.setString(2, todo.description);
       pstmt.setBoolean(3, todo.completed);
@@ -43,10 +37,7 @@ public class TodoRepositoryImpl implements TodoRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      databaseManager.releaseConnection(connection);
     }
-
     return Optional.empty(); // 插入失敗時返回 empty optional
   }
 
@@ -76,20 +67,13 @@ public class TodoRepositoryImpl implements TodoRepository {
   public List<TodoEntity> getTodos(Map<String, String> params) {
     List<TodoEntity> todos = new ArrayList<>();
 
-    Connection connection;
-    try {
-      connection = databaseManager.getConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return todos;
-    }
-
     int page = parsePaginationOrDefault(params, "page", 1);
     int perPage = parsePaginationOrDefault(params, "per_page", 10);
     int offset = (page - 1) * perPage;
     String query = "SELECT * FROM todos LIMIT ? OFFSET ?";
 
-    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+    try (DatabaseConnection connection = databaseManager.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setInt(1, perPage);
       pstmt.setInt(2, offset);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -100,8 +84,6 @@ public class TodoRepositoryImpl implements TodoRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      databaseManager.releaseConnection(connection);
     }
 
     return todos;
@@ -110,17 +92,11 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Get todo by id
   @Override
   public Optional<TodoEntity> getTodoById(int todoId) {
-    Connection connection;
-    try {
-      connection = databaseManager.getConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
 
     String query = "SELECT * FROM todos where id = ?";
 
-    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+    try (DatabaseConnection connection = databaseManager.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setInt(1, todoId);
       try (ResultSet rs = pstmt.executeQuery()) {
         return rs.next()
@@ -130,8 +106,6 @@ public class TodoRepositoryImpl implements TodoRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      databaseManager.releaseConnection(connection);
     }
 
     return Optional.empty(); // 如果未找到記錄則返回 empty Optional
@@ -140,17 +114,10 @@ public class TodoRepositoryImpl implements TodoRepository {
   // Update todo;
   @Override
   public Optional<TodoEntity> updateTodo(int todoId, TodoEntity todo) {
-    Connection connection;
-    try {
-      connection = databaseManager.getConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
-
     String query = "UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?";
 
-    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+    try (DatabaseConnection connection = databaseManager.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, todo.title);
       pstmt.setString(2, todo.description);
       pstmt.setBoolean(3, todo.completed);
@@ -165,8 +132,6 @@ public class TodoRepositoryImpl implements TodoRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      databaseManager.releaseConnection(connection);
     }
 
     return Optional.empty(); // 如果未找到記錄或更新失敗，返回 empty Optional
@@ -182,17 +147,10 @@ public class TodoRepositoryImpl implements TodoRepository {
       return Optional.empty();
     }
 
-    Connection connection;
-    try {
-      connection = databaseManager.getConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
-
     String query = "DELETE FROM todos WHERE id = ?";
 
-    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+    try (DatabaseConnection connection = databaseManager.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setInt(1, todoId);
 
       // 刪除成功，返回被刪除的 TodoEntity otherwise return empty optional
@@ -204,8 +162,6 @@ public class TodoRepositoryImpl implements TodoRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      databaseManager.releaseConnection(connection);
     }
 
     return Optional.empty(); // 刪除失敗時返回 empty optional

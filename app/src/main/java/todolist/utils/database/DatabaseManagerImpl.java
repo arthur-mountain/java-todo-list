@@ -102,7 +102,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
   }
 
   @Override
-  public synchronized Connection getConnection() {
+  public synchronized DatabaseConnection getConnection() {
     if (connectionPool.isEmpty()) {
       if (usedConnections.size() < MAX_POOL_SIZE) {
         connectionPool.add(createConnection());
@@ -119,7 +119,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         System.out.println("Invalid connection, creating a new one.");
         connection = createConnection();
       } else if (!connection.isValid(5)) {
-        System.out.println("The connection, ");
+        System.out.println("The connection is not valid, creating a new one.");
         closeConnection(connection);
         connection = createConnection();
       }
@@ -130,7 +130,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     usedConnections.add(connection);
-    return connection;
+    return new DatabaseConnection(connection, this);
   }
 
   @Override

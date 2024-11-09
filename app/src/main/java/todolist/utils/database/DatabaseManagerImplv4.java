@@ -104,10 +104,16 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
               closeConnection(conn);
               lastUsedTimestamps.remove(conn);
               return true; // 移除超時的閒置連線
+            } else if (!conn.isValid(3)) {
+              System.out.println("Connection is not valid, closing.");
+              closeConnection(conn);
+              lastUsedTimestamps.remove(conn);
+              return true; // 移除無效連線
             }
             return false;
           } catch (SQLException e) {
             e.printStackTrace();
+            closeConnection(conn);
             lastUsedTimestamps.remove(conn);
             return true;
           }
@@ -120,7 +126,7 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
   }
 
   @Override
-  public Connection getConnection() {
+  public DatabaseConnection getConnection() {
     lock.lock();
     try {
       if (connectionPool.isEmpty()) {
@@ -128,11 +134,12 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
           Connection newConnection = createConnection();
           usedConnections.add(newConnection);
           lastUsedTimestamps.put(newConnection, System.currentTimeMillis());
-          return newConnection;
+          return new DatabaseConnection(newConnection, this);
         } else {
           throw new RuntimeException("Maximum pool size reached, no available connections!");
         }
       }
+      //
 
       Connection connection = connectionPool.remove(connectionPool.size() - 1);
 
@@ -140,6 +147,10 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
       try {
         if (connection == null || connection.isClosed()) {
           System.out.println("Invalid connection, creating a new one.");
+          connection = createConnection();
+        } else if (!connection.isValid(3)) {
+          System.out.println("The connection is not valid, creating a new one.");
+          closeConnection(connection);
           connection = createConnection();
         }
       } catch (SQLException e) {
@@ -150,8 +161,7 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
 
       usedConnections.add(connection);
       lastUsedTimestamps.put(connection, System.currentTimeMillis()); // 更新使用時間
-      return connection;
-
+      return new DatabaseConnection(connection, this);
     } finally {
       lock.unlock();
     }

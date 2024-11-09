@@ -75,7 +75,7 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
   }
 
   @Override
-  public synchronized Connection getConnection() {
+  public synchronized DatabaseConnection getConnection() {
     if (connectionPool.isEmpty()) {
       if (usedConnections.size() < MAX_POOL_SIZE) {
         connectionPool.add(createConnection());
@@ -86,7 +86,7 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
 
     Connection connection = connectionPool.remove(connectionPool.size() - 1);
     usedConnections.add(connection);
-    return connection;
+    return new DatabaseConnection(connection, this);
   }
 
   @Override
