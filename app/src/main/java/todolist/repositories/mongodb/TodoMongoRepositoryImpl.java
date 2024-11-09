@@ -1,4 +1,4 @@
-package todolist.repositories;
+package todolist.repositories.mongodb;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;

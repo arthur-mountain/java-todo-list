@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import todolist.entities.TodoEntity;
-import todolist.repositories.TodoRepository;
+import todolist.repositories.postgresql.TodoRepository;
 
 public class TodoController implements HttpHandler {
   private final TodoRepository todoRepository;

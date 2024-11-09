@@ -4,13 +4,13 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import todolist.controllers.TodoController;
-import todolist.repositories.TodoRepositoryImpl;
 import todolist.utils.database.DatabaseManagerImpl;
+import todolist.controllers.TodoController;
+import todolist.repositories.postgresql.TodoRepositoryImpl;
 
-import todolist.controllers.TodoMongoController;
-import todolist.repositories.TodoMongoRepositoryImpl;
 import todolist.utils.database.MongoManagerImpl;
+import todolist.controllers.TodoMongoController;
+import todolist.repositories.mongodb.TodoMongoRepositoryImpl;
 
 public class App {
   private static int PORT = 8080;

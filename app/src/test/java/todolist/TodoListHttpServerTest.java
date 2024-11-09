@@ -23,8 +23,8 @@ import java.io.OutputStream;
 import todolist.controllers.TodoController;
 import todolist.entities.TodoEntity;
 import todolist.utils.database.DatabaseManagerImpl;
-import todolist.repositories.TodoRepository;
-import todolist.repositories.TodoRepositoryImpl;
+import todolist.repositories.postgresql.TodoRepository;
+import todolist.repositories.postgresql.TodoRepositoryImpl;
 
 public class TodoListHttpServerTest {
 

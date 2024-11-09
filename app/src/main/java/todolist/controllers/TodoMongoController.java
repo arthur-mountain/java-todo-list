@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import todolist.entities.TodoMongoEntity;
-import todolist.repositories.TodoMongoRepository;
+import todolist.repositories.mongodb.TodoMongoRepository;
 
 public class TodoMongoController implements HttpHandler {
   private final TodoMongoRepository todoRepository;

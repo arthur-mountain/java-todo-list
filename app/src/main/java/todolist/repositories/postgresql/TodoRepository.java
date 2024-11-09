@@ -1,4 +1,4 @@
-package todolist.repositories;
+package todolist.repositories.postgresql;
 
 import java.util.List;
 import java.util.Map;
