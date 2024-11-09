@@ -128,8 +128,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
   @Override
   public synchronized void releaseConnection(Connection connection) {
-    connectionPool.add(connection);
-    usedConnections.remove(connection);
+    if (connection != null && usedConnections.remove(connection)) {
+      connectionPool.add(connection);
+    }
   }
 
   @Override
@@ -139,6 +140,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
   @Override
   public void shutdown() {
+    healthCheckTimer.cancel();
     usedConnections.forEach(this::closeConnection);
     connectionPool.forEach(this::closeConnection);
     connectionPool.clear();

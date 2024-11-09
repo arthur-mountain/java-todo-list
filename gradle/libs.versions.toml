@@ -5,13 +5,13 @@ guava = "33.2.1-jre"
 junit-jupiter = "5.10.3"
 gson = "2.11.0"
 postgresql = "42.7.4"
+mongodb-driver-sync = "5.2.0"
 # lettuce = "" # https://github.com/redis/lettuce
-# mongodb-driver-sync = "" # https://www.mongodb.com/docs/drivers/java/sync/current
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+mongodbDriverSync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver-sync" }
 # lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
-# mongodbDriverSync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver-sync" }

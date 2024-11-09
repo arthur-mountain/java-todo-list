@@ -19,6 +19,9 @@ dependencies {
     // Postgresql JDBC driver
     implementation(libs.postgresql)
 
+    // MongoDB sync driver
+    implementation(libs.mongodbDriverSync)
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
