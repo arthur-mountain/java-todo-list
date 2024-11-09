@@ -18,19 +18,14 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
   private List<Connection> connectionPool; // 可用的連線
   private List<Connection> usedConnections; // 已借出的連線
-  private static final int INITIAL_POOL_SIZE = 5;
   private static final int MAX_POOL_SIZE = 10;
 
   private Timer healthCheckTimer;
 
   public DatabaseManagerImpl() {
     loadDatabaseConfig();
-    connectionPool = new ArrayList<>(INITIAL_POOL_SIZE);
+    connectionPool = new ArrayList<>();
     usedConnections = new ArrayList<>();
-
-    for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
-      connectionPool.add(createConnection());
-    }
 
     // 啟動健康檢查
     startConnectionHealthCheck();
@@ -84,9 +79,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
     healthCheckTimer.schedule(new TimerTask() {
       @Override
       public void run() {
+        System.out.println("Running health check");
         // 這會把 DatabaseManagerImpl 鎖住，避免其他 Thread執行此 class
         // 但是鎖整個，優化方式是可以在鎖細粒杜小一點得地方，而非整個 class
-        // 可以參考 implementation v1 and v2
+        // 可以參考 implementation v1, v2, v3 and v4
         synchronized (DatabaseManagerImpl.this) {
           connectionPool.removeIf(conn -> {
             try {
@@ -100,15 +96,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
               return true;
             }
           });
-
-          // 如果池中連線不足，補充新的連線
-          while (connectionPool.size() < INITIAL_POOL_SIZE) {
-            connectionPool.add(createConnection());
-            System.out.println("Added a new connection to the pool.");
-          }
         }
       }
-    }, 0, 60000); // 每 60 秒檢查一次
+    }, 0, 30000); // 每 30 秒檢查一次
   }
 
   @Override
@@ -122,12 +112,30 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     Connection connection = connectionPool.remove(connectionPool.size() - 1);
+
+    // 檢查連線是否有效，若無效則重新建立連線
+    try {
+      if (connection == null || connection.isClosed()) {
+        System.out.println("Invalid connection, creating a new one.");
+        connection = createConnection();
+      } else if (!connection.isValid(5)) {
+        System.out.println("The connection, ");
+        closeConnection(connection);
+        connection = createConnection();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      System.out.println("Validate connection failed, creating a new one.");
+      connection = createConnection(); // 如果檢查失敗則創建新連線
+    }
+
     usedConnections.add(connection);
     return connection;
   }
 
   @Override
   public synchronized void releaseConnection(Connection connection) {
+    System.out.println("Releasing connection: " + connection);
     if (connection != null && usedConnections.remove(connection)) {
       connectionPool.add(connection);
     }
