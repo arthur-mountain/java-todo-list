@@ -1,25 +1,15 @@
 version: "3.9"
 
 services:
-  # todo-postgres:
-  #   image: $POSTGRES_IMAGE
-  #   container_name: todo-pg
-  #   tty: true
-  #   stdin_open: true
-  #   env_file: .env
-  #   volumes:
-  #     - $POSTGRES_VOLUME1
-  #     - $POSTGRES_VOLUME2
-  #   ports:
-  #     - $POSTGRES_CONTAINER_PORT:$POSTGRES_PORT
-
-  todo-mongo:
-    image: $MONGODB_IMAGE
-    container_name: todo-mongo
+  todo-postgres:
+    image: $POSTGRES_IMAGE
+    container_name: todo-pg
     tty: true
     stdin_open: true
     env_file: .env
     volumes:
-      - $MONGODB_VOLUME1
+      - $POSTGRES_VOLUME1
+      - $POSTGRES_VOLUME2
+      - $POSTGRES_VOLUME3
     ports:
-      - $MONGODB_CONTAINER_PORT:$MONGODB_PORT
+      - $POSTGRES_CONTAINER_PORT:$POSTGRES_PORT

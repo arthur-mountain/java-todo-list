@@ -91,3 +91,10 @@ reports/
 test-results/
 coverage/
 
+
+# postgresql
+!database/**
+database/migrations/*init_users.sql
+
+# mongo
+!mongo/**
