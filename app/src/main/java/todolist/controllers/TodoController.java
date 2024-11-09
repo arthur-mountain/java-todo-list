@@ -90,8 +90,6 @@ public class TodoController implements HttpHandler {
       todoId = null;
     }
 
-    System.out.println("todoId -> " + todoId);
-
     Headers headers = exchange.getResponseHeaders();
     headers.set("Content-Type", "application/json; charset=UTF-8");
     byte[] responseBytes;
