@@ -151,6 +151,7 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
       usedConnections.add(connection);
       lastUsedTimestamps.put(connection, System.currentTimeMillis()); // 更新使用時間
       return connection;
+
     } finally {
       lock.unlock();
     }
