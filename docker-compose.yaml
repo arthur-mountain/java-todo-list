@@ -1,25 +1,29 @@
 version: "3.9"
 
+# Common configurations for reuse
+x-common: &common-settings
+  tty: true
+  stdin_open: true
+  env_file: .env
+
 services:
   todo-postgres:
-    image: $POSTGRES_IMAGE
+    <<: *common-settings
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      args:
+        POSTGRES_IMAGE: $POSTGRES_IMAGE
     container_name: todo-pg
-    tty: true
-    stdin_open: true
-    env_file: .env
     volumes:
       - $POSTGRES_VOLUME1
-      - $POSTGRES_VOLUME2
-      - $POSTGRES_VOLUME3
     ports:
       - $POSTGRES_CONTAINER_PORT:$POSTGRES_PORT
 
   todo-mongo:
+    <<: *common-settings
     image: $MONGODB_IMAGE
     container_name: todo-mongo
-    tty: true
-    stdin_open: true
-    env_file: .env
     volumes:
       - $MONGODB_VOLUME1
       - $MONGODB_VOLUME2
