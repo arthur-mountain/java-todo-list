@@ -89,7 +89,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
     try {
       for (Document doc : getTodosCollection().find()) {
         todos.add(new TodoMongoEntity(
-            doc.getObjectId("_id"),
+            doc.getObjectId("_id").toString(),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -110,7 +110,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
 
       for (Document doc : getTodosCollection().find().skip(offset).limit(perPage)) {
         todos.add(new TodoMongoEntity(
-            doc.getObjectId("_id"),
+            doc.getObjectId("_id").toString(),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -128,7 +128,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
       Document doc = getTodosCollection().find(Filters.eq("_id", todoId)).first();
       if (doc != null) {
         return Optional.of(new TodoMongoEntity(
-            doc.getObjectId("_id"),
+            doc.getObjectId("_id").toString(),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -151,7 +151,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
       Document updatedDoc = getTodosCollection().findOneAndUpdate(filter, updates);
       if (updatedDoc != null) {
         return Optional.of(new TodoMongoEntity(
-            updatedDoc.getObjectId("_id"),
+            updatedDoc.getObjectId("_id").toString(),
             updatedDoc.getString("title"),
             updatedDoc.getString("description"),
             updatedDoc.getBoolean("completed", false)));
@@ -169,7 +169,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
       Document deletedDoc = getTodosCollection().findOneAndDelete(Filters.eq("_id", todoId));
       if (deletedDoc != null) {
         return Optional.of(new TodoMongoEntity(
-            deletedDoc.getObjectId("_id"),
+            deletedDoc.getObjectId("_id").toString(),
             deletedDoc.getString("title"),
             deletedDoc.getString("description"),
             deletedDoc.getBoolean("completed", false)));
