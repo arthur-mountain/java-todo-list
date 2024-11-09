@@ -7,23 +7,23 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import todolist.entities.TodoEntity;
+import todolist.entities.TodoMongoEntity;
 import todolist.utils.database.MongoManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class TodoRepositoryMongoImpl implements TodoRepository {
+public class TodoMongoRepositoryImpl implements TodoMongoRepository {
   private final MongoManager mongoManager;
   private String DATABASE_NAME;
 
   // 注入 MongoManager
-  public TodoRepositoryMongoImpl(MongoManager mongoManager) {
+  public TodoMongoRepositoryImpl(MongoManager mongoManager) {
     this.mongoManager = mongoManager;
 
     Properties properties = new Properties();
@@ -68,9 +68,8 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
 
   // Create todo
   @Override
-  public Optional<TodoEntity> createTodo(TodoEntity todo) {
-    Document newTodoDocument = new Document("id", todo.id)
-        .append("title", todo.title)
+  public Optional<TodoMongoEntity> createTodo(TodoMongoEntity todo) {
+    Document newTodoDocument = new Document("title", todo.title)
         .append("description", todo.description)
         .append("completed", todo.completed);
 
@@ -85,12 +84,12 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
 
   // Get todos
   @Override
-  public List<TodoEntity> getTodos() {
-    List<TodoEntity> todos = new ArrayList<>();
+  public List<TodoMongoEntity> getTodos() {
+    List<TodoMongoEntity> todos = new ArrayList<>();
     try {
       for (Document doc : getTodosCollection().find()) {
-        todos.add(new TodoEntity(
-            doc.getInteger("id"),
+        todos.add(new TodoMongoEntity(
+            doc.getObjectId("_id"),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -102,16 +101,16 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
   }
 
   @Override
-  public List<TodoEntity> getTodos(Map<String, String> params) {
-    List<TodoEntity> todos = new ArrayList<>();
+  public List<TodoMongoEntity> getTodos(Map<String, String> params) {
+    List<TodoMongoEntity> todos = new ArrayList<>();
     try {
       int page = parsePaginationOrDefault(params, "page", 1);
       int perPage = parsePaginationOrDefault(params, "per_page", 10);
       int offset = (page - 1) * perPage;
 
       for (Document doc : getTodosCollection().find().skip(offset).limit(perPage)) {
-        todos.add(new TodoEntity(
-            doc.getInteger("id"),
+        todos.add(new TodoMongoEntity(
+            doc.getObjectId("_id"),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -124,12 +123,12 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
 
   // Get todo by id
   @Override
-  public Optional<TodoEntity> getTodoById(int todoId) {
+  public Optional<TodoMongoEntity> getTodoById(ObjectId todoId) {
     try {
-      Document doc = getTodosCollection().find(Filters.eq("id", todoId)).first();
+      Document doc = getTodosCollection().find(Filters.eq("_id", todoId)).first();
       if (doc != null) {
-        return Optional.of(new TodoEntity(
-            doc.getInteger("id"),
+        return Optional.of(new TodoMongoEntity(
+            doc.getObjectId("_id"),
             doc.getString("title"),
             doc.getString("description"),
             doc.getBoolean("completed", false)));
@@ -142,8 +141,8 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
 
   // Update todo
   @Override
-  public Optional<TodoEntity> updateTodo(int todoId, TodoEntity todo) {
-    Bson filter = Filters.eq("id", todoId);
+  public Optional<TodoMongoEntity> updateTodo(ObjectId todoId, TodoMongoEntity todo) {
+    Bson filter = Filters.eq("_id", todoId);
     Bson updates = Updates.combine(
         Updates.set("title", todo.title),
         Updates.set("description", todo.description),
@@ -151,8 +150,8 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
     try {
       Document updatedDoc = getTodosCollection().findOneAndUpdate(filter, updates);
       if (updatedDoc != null) {
-        return Optional.of(new TodoEntity(
-            updatedDoc.getInteger("id"),
+        return Optional.of(new TodoMongoEntity(
+            updatedDoc.getObjectId("_id"),
             updatedDoc.getString("title"),
             updatedDoc.getString("description"),
             updatedDoc.getBoolean("completed", false)));
@@ -165,12 +164,12 @@ public class TodoRepositoryMongoImpl implements TodoRepository {
 
   // Delete todo
   @Override
-  public Optional<TodoEntity> deleteTodo(int todoId) {
+  public Optional<TodoMongoEntity> deleteTodo(ObjectId todoId) {
     try {
-      Document deletedDoc = getTodosCollection().findOneAndDelete(Filters.eq("id", todoId));
+      Document deletedDoc = getTodosCollection().findOneAndDelete(Filters.eq("_id", todoId));
       if (deletedDoc != null) {
-        return Optional.of(new TodoEntity(
-            deletedDoc.getInteger("id"),
+        return Optional.of(new TodoMongoEntity(
+            deletedDoc.getObjectId("_id"),
             deletedDoc.getString("title"),
             deletedDoc.getString("description"),
             deletedDoc.getBoolean("completed", false)));
