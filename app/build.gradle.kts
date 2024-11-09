@@ -22,6 +22,9 @@ dependencies {
     // MongoDB sync driver
     implementation(libs.mongodbDriverSync)
 
+    // Redis sync/async driver
+    implementation(libs.lettuce)
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
