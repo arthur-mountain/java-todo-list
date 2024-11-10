@@ -31,7 +31,7 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
   private ScheduledExecutorService healthCheckExecutor;
 
   public DatabaseManagerImplv4() {
-    connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
+    connectionConfig = ConfigLoader.load(DatabaseManagerImplv4.class,
         new String[] { "db.url", "db.user", "db.password" });
 
     connectionPool = new ArrayList<>();
@@ -119,7 +119,6 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
           throw new RuntimeException("Maximum pool size reached, no available connections!");
         }
       }
-      //
 
       Connection connection = connectionPool.remove(connectionPool.size() - 1);
 

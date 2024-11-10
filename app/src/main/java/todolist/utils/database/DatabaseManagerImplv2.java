@@ -15,20 +15,15 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
 
   private List<Connection> connectionPool; // 可用的連線
   private List<Connection> usedConnections; // 已借出的連線
-  private static final int INITIAL_POOL_SIZE = 5;
   private static final int MAX_POOL_SIZE = 10;
 
   public DatabaseManagerImplv2() {
-    connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
+    connectionConfig = ConfigLoader.load(DatabaseManagerImplv2.class,
         new String[] { "db.url", "db.user", "db.password" });
 
     // Diff with v1, 使用 synchronized list 來實作 connectionPool 和 usedConnections
     connectionPool = Collections.synchronizedList(new ArrayList<>());
     usedConnections = Collections.synchronizedList(new ArrayList<>());
-
-    for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
-      connectionPool.add(createConnection());
-    }
   }
 
   private Connection createConnection() {
@@ -68,8 +63,10 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
 
   @Override
   public void releaseConnection(Connection connection) {
-    connectionPool.add(connection);
-    usedConnections.remove(connection);
+    System.out.println("Releasing connection: " + connection);
+    if (connection != null && usedConnections.remove(connection)) {
+      connectionPool.add(connection);
+    }
   }
 
   @Override

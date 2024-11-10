@@ -18,15 +18,15 @@ import todolist.utils.database.MongoManager;
 
 public class TodoMongoRepositoryImpl implements TodoMongoRepository {
   private final MongoManager mongoManager;
-  private String DATABASE_NAME;
+  private final String DATABASE_NAME;
 
-  // 注入 MongoManager
+  // MongoManager injection
   public TodoMongoRepositoryImpl(MongoManager mongoManager) {
     this.mongoManager = mongoManager;
     this.DATABASE_NAME = ConfigLoader.load(TodoMongoRepositoryImpl.class, "mongodb.db.name");
   }
 
-  private MongoCollection<Document> getTodosCollection() throws Exception {
+  private final MongoCollection<Document> getTodosCollection() throws Exception {
     MongoClient client = mongoManager.getConnection();
     MongoDatabase database = client.getDatabase(DATABASE_NAME);
     return database.getCollection("todos");

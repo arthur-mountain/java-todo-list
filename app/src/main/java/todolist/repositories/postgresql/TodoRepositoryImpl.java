@@ -12,7 +12,7 @@ import todolist.utils.database.DatabaseConnection;
 public class TodoRepositoryImpl implements TodoRepository {
   private final DatabaseManager databaseManager;
 
-  // 注入 DatabaseManager
+  // DatabaseManager injection
   public TodoRepositoryImpl(DatabaseManager databaseManager) {
     this.databaseManager = databaseManager;
   }
@@ -108,7 +108,7 @@ public class TodoRepositoryImpl implements TodoRepository {
       e.printStackTrace();
     }
 
-    return Optional.empty(); // 如果未找到記錄則返回 empty Optional
+    return Optional.empty(); // 如果未找到 record 則返回 empty Optional
   }
 
   // Update todo;
@@ -123,7 +123,7 @@ public class TodoRepositoryImpl implements TodoRepository {
       pstmt.setBoolean(3, todo.completed);
       pstmt.setInt(4, todoId);
 
-      // 如果成功更新，返回更新後的 TodoEntity otherwise return empty Optional
+      // 如果成功更新，則返回更新後的 TodoEntity otherwise return empty Optional
       if (pstmt.executeUpdate() > 0) {
         return getTodoById(todoId);
       } else {
@@ -134,13 +134,13 @@ public class TodoRepositoryImpl implements TodoRepository {
       e.printStackTrace();
     }
 
-    return Optional.empty(); // 如果未找到記錄或更新失敗，返回 empty Optional
+    return Optional.empty(); // 如果未找到 record 或更新失敗，return empty Optional
   }
 
   // Delete todo
   @Override
   public Optional<TodoEntity> deleteTodo(int todoId) {
-    // 查詢待刪除的記錄
+    // 查詢待刪除的 record
     Optional<TodoEntity> optionalTodo = getTodoById(todoId);
     if (!optionalTodo.isPresent()) {
       System.out.println("No todo found with ID: " + todoId);

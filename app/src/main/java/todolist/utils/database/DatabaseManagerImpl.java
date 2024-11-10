@@ -59,8 +59,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
       @Override
       public void run() {
         System.out.println("Running health check");
-        // 這會把 DatabaseManagerImpl 鎖住，避免其他 Thread執行此 class
-        // 但是鎖整個，優化方式是可以在鎖細粒杜小一點得地方，而非整個 class
+        // 這會把 DatabaseManagerImpl 鎖住，避免其他 Thread 執行此 class
+        // 但是鎖整個，優化方式是可以在鎖細粒度小一點得地方，而非整個 class
         // 可以參考 implementation v1, v2, v3 and v4
         synchronized (DatabaseManagerImpl.this) {
           connectionPool.removeIf(conn -> {

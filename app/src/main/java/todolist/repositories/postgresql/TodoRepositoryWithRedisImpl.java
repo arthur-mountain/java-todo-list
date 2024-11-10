@@ -15,7 +15,7 @@ public class TodoRepositoryWithRedisImpl implements TodoRepository {
   private final DatabaseManager databaseManager;
   private final String TODO_CACHE_KEY_PREFIX = "todos";
 
-  // 注入 DatabaseManager
+  // DatabaseManager injection
   public TodoRepositoryWithRedisImpl(DatabaseManager databaseManager) {
     this.databaseManager = databaseManager;
   }
@@ -119,7 +119,7 @@ public class TodoRepositoryWithRedisImpl implements TodoRepository {
       e.printStackTrace();
     }
 
-    return Optional.empty(); // 如果未找到記錄則返回 empty Optional
+    return Optional.empty(); // 如果未找到 record 則返回 empty Optional
   }
 
   // Update todo;
@@ -145,7 +145,7 @@ public class TodoRepositoryWithRedisImpl implements TodoRepository {
       e.printStackTrace();
     }
 
-    return Optional.empty(); // 如果未找到記錄或更新失敗，返回 empty Optional
+    return Optional.empty(); // 如果未找到 record 或更新失敗，返回 empty Optional
   }
 
   // Delete todo

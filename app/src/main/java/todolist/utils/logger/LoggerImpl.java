@@ -70,7 +70,7 @@ public class LoggerImpl implements Logger {
   }
 
   private void configureLogger(String configPath) {
-    logger.setUseParentHandlers(false); // 禁用父处理器，避免重复输出
+    logger.setUseParentHandlers(false); // Disable parent handlers, avoid duplicate logs
 
     if (configPath != null && !configPath.isEmpty()) {
       try (InputStream configFile = LoggerImpl.class.getClassLoader().getResourceAsStream(configPath)) {
@@ -99,7 +99,7 @@ public class LoggerImpl implements Logger {
       String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
       String newLogFilename = String.format("%s/todolist-%s.log", LOGS_DIRECTORY, date);
 
-      // 检查是否需要更新 file handler
+      // 檢查是否需要更新 file handler
       if (fileHandler == null || !newLogFilename.equals(currentLogFilename)) {
         if (fileHandler != null) {
           logger.removeHandler(fileHandler); // remove old file handler
