@@ -1,9 +1,11 @@
 package todolist;
 
 import com.sun.net.httpserver.HttpServer;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import todolist.utils.logger.LoggerImpl;
 import todolist.utils.database.DatabaseManagerImpl;
 import todolist.controllers.TodoController;
 import todolist.repositories.postgresql.TodoRepositoryImpl;
@@ -14,9 +16,14 @@ import todolist.controllers.TodoMongoController;
 import todolist.repositories.mongodb.TodoMongoRepositoryImpl;
 
 public class App {
-  private static int PORT = 8080;
-
   public static void main(String[] args) throws IOException {
+    Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+      LoggerImpl.getInstance(App.class)
+          .error("Unhandled exception in thread:" + thread.getName() + "message:" + throwable.getMessage());
+    });
+
+    int PORT = 8080;
+
     try {
       String portEnv = System.getenv("PORT");
       if (portEnv != null) {
