@@ -14,13 +14,13 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
-- [x] with [PostgreSQL](https://www.postgresql.org).
+- [x] setup docker.
 
-  - [x] setup docker
+- [x] with [PostgreSQL](https://www.postgresql.org).
 
 - [x] with [MongoDB](https://www.mongodb.com).
 
-- [ ] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
+- [x] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
 
 ## Features
 
@@ -32,40 +32,91 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 2. POST: Add a new to-do item.
 
-3. PATCH: Update an existing to-do item by its ID(index currently).
+3. PATCH: Update an existing to-do item by its ID.
 
-4. DELETE: Remove a to-do item by its ID(index currently).
+4. DELETE: Remove a to-do item by its ID.
 
 5. Simple error handling for invalid requests and missing parameters.
 
 ## Endpoints
 
-- **GET**: /todos
+<details>
+<summary> <h4 style='display:inline;'>v1/todos -> PostgreSQL</h4> </summary>
 
-  Response: JSON array of to-do items.
+- **GET**: `/v1/todos`
 
-- **GET**: /todo/$id
+  - Response: JSON array of to-do items from PostgreSQL.
 
-  Response: JSON object of to-do item.
+- **GET**: `/v1/todo/{id}`
 
-- **POST**: /todos
+  - Response: JSON object of a specific to-do item from PostgreSQL.
 
-  Request Body: Plain text of the new to-do item.
+- **POST**: `/v1/todos`
 
-  Response: Confirmation message.
+  - Request Body: Plain text representing the new to-do item.
+  - Response: Confirmation message upon successful addition to PostgreSQL.
 
-- **PATCH**: /todos/{id}
+- **PATCH**: `/v1/todos/{id}`
 
-  Request Body: Plain text of the updated to-do item.
+  - Request Body: Plain text representing the updated to-do item.
+  - Response: Confirmation message or error if the ID is invalid.
 
-  Response: Confirmation message or error if ID is invalid.
+- **DELETE**: `/v1/todos/{id}`
+  - Response: Confirmation message or error if the ID is invalid.
 
-- **DELETE**: /todos?id={id}
+</details>
 
-  Response: Confirmation message or error if ID is invalid.
+<details>
+<summary> <h4 style='display:inline;'>v2/todos -> MongoDB</h4> </summary>
 
-  P.S. Prefer using /todos/{id},
-  but this is just for practicing parsing the query string.
+- **GET**: `/v2/todos`
+
+  - Response: JSON array of to-do items from MongoDB.
+
+- **GET**: `/v2/todo/{id}`
+
+  - Response: JSON object of a specific to-do item from MongoDB.
+
+- **POST**: `/v2/todos`
+
+  - Request Body: Plain text representing the new to-do item.
+  - Response: Confirmation message upon successful addition to MongoDB.
+
+- **PATCH**: `/v2/todos/{id}`
+
+  - Request Body: Plain text representing the updated to-do item.
+  - Response: Confirmation message or error if the ID is invalid.
+
+- **DELETE**: `/v2/todos/{id}`
+  - Response: Confirmation message or error if the ID is invalid.
+
+</details>
+
+<details>
+<summary> <h4 style='display:inline;'>v3/todos -> Redis + PostgreSQL</h4> </summary>
+
+- **GET**: `/v3/todos`
+
+  - Response: JSON array of to-do items, with Redis caching results from PostgreSQL.
+
+- **GET**: `/v3/todo/{id}`
+
+  - Response: JSON object of a specific to-do item, fetched directly from PostgreSQL (no Redis caching).
+
+- **POST**: `/v3/todos`
+
+  - Request Body: Plain text representing the new to-do item.
+  - Response: Confirmation message upon successful addition to PostgreSQL (no Redis caching).
+
+- **PATCH**: `/v3/todos/{id}`
+
+  - Request Body: Plain text representing the updated to-do item.
+  - Response: Confirmation message or error if the ID is invalid, with the update applied only to PostgreSQL (no Redis caching).
+
+- **DELETE**: `/v3/todos/{id}`
+  - Response: Confirmation message or error if the ID is invalid, with the deletion applied only to PostgreSQL (no Redis caching).
+
+</details>
 
 ## Success Response
 
