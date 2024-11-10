@@ -1,12 +1,11 @@
 package todolist.controllers;
 
 import org.bson.types.ObjectId;
-import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
-import java.nio.charset.StandardCharsets;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +13,7 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import todolist.utils.json.Json;
 import todolist.entities.TodoMongoEntity;
 import todolist.repositories.mongodb.TodoMongoRepository;
 
@@ -63,20 +63,6 @@ public class TodoMongoController implements HttpHandler {
     }
   }
 
-  private <T> String toJSON(T values) {
-    Gson gson = new Gson();
-    return gson.toJson(values);
-  }
-
-  private <T> T fromJSON(String json, Class<T> type) {
-    Gson gson = new Gson();
-    return gson.fromJson(json, type);
-  }
-
-  private byte[] toBytes(String str) {
-    return str.getBytes(StandardCharsets.UTF_8);
-  }
-
   // GET，列出所有待辦事項 or 通過 ID 獲取單一待辦
   private void handleGet(HttpExchange exchange) throws IOException {
     ObjectId todoId = null;
@@ -95,15 +81,13 @@ public class TodoMongoController implements HttpHandler {
     headers.set("Content-Type", "application/json; charset=UTF-8");
     byte[] responseBytes;
     if (todoId == null) {
-      responseBytes = toJSON(todoRepository.getTodos(parseQuery(exchange.getRequestURI().getQuery())))
-          .getBytes(StandardCharsets.UTF_8);
+      responseBytes = Json.toBytes(todoRepository.getTodos(parseQuery(exchange.getRequestURI().getQuery())));
     } else {
       Optional<TodoMongoEntity> todo = todoRepository.getTodoById(todoId);
       if (todo.isPresent()) {
-        responseBytes = toJSON(todo.get()).getBytes(StandardCharsets.UTF_8);
+        responseBytes = Json.toBytes(todo.get());
       } else {
-        responseBytes = toJSON(new HashMap<>(Map.of("message", "Not found todo with id -> " + todoId)))
-            .getBytes(StandardCharsets.UTF_8);
+        responseBytes = Json.toBytes(new HashMap<>(Map.of("message", "Not found todo with id -> " + todoId)));
       }
     }
     exchange.sendResponseHeaders(200, responseBytes.length);
@@ -116,14 +100,14 @@ public class TodoMongoController implements HttpHandler {
   private void handlePost(HttpExchange exchange) throws IOException {
     try (InputStream input = exchange.getRequestBody()) {
       Optional<TodoMongoEntity> createdTodo = todoRepository
-          .createTodo(fromJSON(new String(input.readAllBytes(), StandardCharsets.UTF_8), TodoMongoEntity.class));
+          .createTodo(Json.fromJSON(input.readAllBytes(), TodoMongoEntity.class));
 
       byte[] responseBytes;
       if (createdTodo.isPresent()) {
-        responseBytes = toBytes(toJSON(createdTodo.get()));
+        responseBytes = Json.toBytes(Json.toJSON(createdTodo.get()));
         exchange.sendResponseHeaders(201, responseBytes.length);
       } else {
-        responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Create todo failed"))));
+        responseBytes = Json.toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Create todo failed"))));
         exchange.sendResponseHeaders(400, responseBytes.length);
       }
 
@@ -132,7 +116,7 @@ public class TodoMongoController implements HttpHandler {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      byte[] responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Missing todo item"))));
+      byte[] responseBytes = Json.toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Missing todo item"))));
       exchange.sendResponseHeaders(400, responseBytes.length);
       try (OutputStream os = exchange.getResponseBody()) {
         os.write(responseBytes);
@@ -153,7 +137,8 @@ public class TodoMongoController implements HttpHandler {
       }
     } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
       e.printStackTrace();
-      byte[] responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Missing todo id or invalid format"))));
+      byte[] responseBytes = Json
+          .toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Missing todo id or invalid format"))));
       exchange.sendResponseHeaders(400, responseBytes.length);
       try (OutputStream os = exchange.getResponseBody()) {
         os.write(responseBytes);
@@ -162,8 +147,8 @@ public class TodoMongoController implements HttpHandler {
     }
 
     if (!todoRepository.getTodoById(todoId).isPresent()) {
-      byte[] responseBytes = toBytes(
-          toJSON(new HashMap<>(Map.of("message", "Missing todo id or todo item not found"))));
+      byte[] responseBytes = Json.toBytes(
+          Json.toJSON(new HashMap<>(Map.of("message", "Missing todo id or todo item not found"))));
       exchange.sendResponseHeaders(404, responseBytes.length);
       try (OutputStream os = exchange.getResponseBody()) {
         os.write(responseBytes);
@@ -173,14 +158,15 @@ public class TodoMongoController implements HttpHandler {
 
     try (InputStream input = exchange.getRequestBody()) {
       Optional<TodoMongoEntity> updatedTodo = todoRepository.updateTodo(todoId,
-          fromJSON(new String(input.readAllBytes(), StandardCharsets.UTF_8), TodoMongoEntity.class));
+          Json.fromJSON(input.readAllBytes(), TodoMongoEntity.class));
 
       byte[] responseBytes;
       if (updatedTodo.isPresent()) {
-        responseBytes = toBytes(toJSON(toJSON(updatedTodo.get())));
+        responseBytes = Json.toBytes(Json.toJSON(updatedTodo.get()));
         exchange.sendResponseHeaders(200, responseBytes.length);
       } else {
-        responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Update todo failed with id -> " + todoId))));
+        responseBytes = Json
+            .toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Update todo failed with id -> " + todoId))));
         exchange.sendResponseHeaders(400, responseBytes.length);
       }
 
@@ -189,7 +175,7 @@ public class TodoMongoController implements HttpHandler {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      byte[] responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Not found todo item "))));
+      byte[] responseBytes = Json.toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Not found todo item "))));
       exchange.sendResponseHeaders(400, responseBytes.length);
       try (OutputStream os = exchange.getResponseBody()) {
         os.write(responseBytes);
@@ -210,7 +196,8 @@ public class TodoMongoController implements HttpHandler {
       }
     } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
       try (OutputStream os = exchange.getResponseBody()) {
-        byte[] responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Missing todo id or invalid format"))));
+        byte[] responseBytes = Json
+            .toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Missing todo id or invalid format"))));
         exchange.sendResponseHeaders(400, responseBytes.length);
         os.write(responseBytes);
       }
@@ -221,10 +208,11 @@ public class TodoMongoController implements HttpHandler {
 
     byte[] responseBytes;
     if (deletedTodo.isPresent()) {
-      responseBytes = toBytes(toJSON(deletedTodo.get()));
+      responseBytes = Json.toBytes(Json.toJSON(deletedTodo.get()));
       exchange.sendResponseHeaders(200, responseBytes.length);
     } else {
-      responseBytes = toBytes(toJSON(new HashMap<>(Map.of("message", "Not found todo item with id -> " + todoId))));
+      responseBytes = Json
+          .toBytes(Json.toJSON(new HashMap<>(Map.of("message", "Not found todo item with id -> " + todoId))));
       exchange.sendResponseHeaders(404, responseBytes.length);
     }
 

@@ -2,6 +2,7 @@ package todolist.utils.json;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.nio.charset.StandardCharsets;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,18 @@ public class Json {
 
   public static <T> String toJSON(T values) {
     return getInstance().toJson(values);
+  }
+
+  public static <T> byte[] toBytes(T values) {
+    return toJSON(values).getBytes(StandardCharsets.UTF_8);
+  }
+
+  public static <T> T fromJSON(byte[] bytes, Class<T> classOfT) {
+    return fromJSONWithType(new String(bytes, StandardCharsets.UTF_8), classOfT, null);
+  }
+
+  public static <T> T fromJSON(byte[] bytes, Class<T> classOfT, T defaultValue) {
+    return fromJSONWithType(new String(bytes, StandardCharsets.UTF_8), classOfT, defaultValue);
   }
 
   public static <T> T fromJSON(String json, Class<T> classOfT) {
