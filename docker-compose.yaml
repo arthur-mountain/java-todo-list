@@ -29,3 +29,13 @@ services:
       - $MONGODB_VOLUME2
     ports:
       - $MONGODB_CONTAINER_PORT:$MONGODB_PORT
+
+  todo-redis:
+    <<: *common-settings
+    image: $REDIS_IMAGE
+    container_name: todo-redis
+    volumes:
+      - $REDIS_VOLUME1
+    ports:
+      - $REDIS_CONTAINER_PORT:$REDIS_PORT
+    command: redis-server  --requirepass $REDIS_PASSWORD
