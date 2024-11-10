@@ -21,7 +21,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
   public DatabaseManagerImpl() {
     connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
-        new String[] { "db.url", "db.name", "db.password" });
+        new String[] { "db.url", "db.user", "db.password" });
 
     connectionPool = new ArrayList<>();
     usedConnections = new ArrayList<>();
@@ -35,7 +35,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
   private Connection createConnection() {
     try {
-      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.username"),
+      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.user"),
           connectionConfig.get("db.password"));
     } catch (SQLException e) {
       e.printStackTrace();

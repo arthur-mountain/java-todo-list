@@ -19,8 +19,8 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
   private static final int MAX_POOL_SIZE = 10;
 
   public DatabaseManagerImplv2() {
-    connectionConfig = ConfigLoader.load(DatabaseManagerImplv2.class,
-        new String[] { "db.url", "db.name", "db.password" });
+    connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
+        new String[] { "db.url", "db.user", "db.password" });
 
     // Diff with v1, 使用 synchronized list 來實作 connectionPool 和 usedConnections
     connectionPool = Collections.synchronizedList(new ArrayList<>());
@@ -33,7 +33,7 @@ public class DatabaseManagerImplv2 implements DatabaseManager {
 
   private Connection createConnection() {
     try {
-      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.username"),
+      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.user"),
           connectionConfig.get("db.password"));
     } catch (SQLException e) {
       e.printStackTrace();

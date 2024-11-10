@@ -31,8 +31,8 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
   private ScheduledExecutorService healthCheckExecutor;
 
   public DatabaseManagerImplv4() {
-    connectionConfig = ConfigLoader.load(DatabaseManagerImplv4.class,
-        new String[] { "db.url", "db.name", "db.password" });
+    connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
+        new String[] { "db.url", "db.user", "db.password" });
 
     connectionPool = new ArrayList<>();
     usedConnections = new ArrayList<>();
@@ -47,7 +47,7 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
 
   private Connection createConnection() {
     try {
-      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.username"),
+      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.user"),
           connectionConfig.get("db.password"));
     } catch (SQLException e) {
       e.printStackTrace();
