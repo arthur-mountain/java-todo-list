@@ -13,8 +13,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import todolist.utils.config.ConfigLoader;
 
+// https://redis.io/docs/latest/develop/connect/clients/java/lettuce
 public class RedisManagerImpl implements RedisManager {
-  private static volatile RedisManagerImpl instance; // volatile keyword ensures visibility of changes to instance
+  // volatile keyword ensures visibility of changes to instance
+  private static volatile RedisManager instance;
   private final RedisClient redisClient;
   private final StatefulRedisConnection<String, String> connection;
   private final RedisCommands<String, String> syncCommands;
@@ -39,7 +41,7 @@ public class RedisManagerImpl implements RedisManager {
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
   }
 
-  public static RedisManagerImpl getInstance() {
+  public static RedisManager getInstance() {
     if (instance == null) { // First check (no locking)
       synchronized (RedisManagerImpl.class) {
         if (instance == null) { // Second check (with locking)

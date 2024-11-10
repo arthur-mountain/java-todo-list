@@ -1,7 +1,5 @@
 package todolist.repositories.postgresql;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +9,11 @@ import todolist.entities.TodoEntity;
 import todolist.utils.database.RedisManagerImpl;
 import todolist.utils.database.DatabaseManager;
 import todolist.utils.database.DatabaseConnection;
+import todolist.utils.json.Json;
 
 public class TodoRepositoryWithRedisImpl implements TodoRepository {
   private final DatabaseManager databaseManager;
-  private final String TODO_CACHE_KEY_PREFIX = "todos:";
+  private final String TODO_CACHE_KEY_PREFIX = "todos";
 
   // 注入 DatabaseManager
   public TodoRepositoryWithRedisImpl(DatabaseManager databaseManager) {
@@ -77,16 +76,7 @@ public class TodoRepositoryWithRedisImpl implements TodoRepository {
     String cache = RedisManagerImpl.getInstance().get(cacheKey);
 
     if (cache != null) {
-      // try {
-      // List<TodoEntity> todoList = gson.fromJson(jsonString, new
-      // TypeToken<List<TodoEntity>>(){}.getType());
-      // } catch (JsonSyntaxException | ClassCastException e) {
-      // // 處理錯誤，例如記錄日誌或返回預設值
-      // System.err.println("反序列化失敗：" + e.getMessage());
-      // }
-      System.out.println("Get todos from cache");
-      return new Gson().fromJson(cache, new TypeToken<List<TodoEntity>>() {
-      }.getType());
+      return Json.fromJSONToList(cache, TodoEntity.class);
     }
 
     List<TodoEntity> todos = new ArrayList<>();
@@ -103,12 +93,11 @@ public class TodoRepositoryWithRedisImpl implements TodoRepository {
         }
       }
 
-      RedisManagerImpl.getInstance().set(cacheKey, new Gson().toJson(todos));
+      RedisManagerImpl.getInstance().set(cacheKey, Json.toJSON(todos));
     } catch (SQLException e) {
       e.printStackTrace();
     }
 
-    System.out.println("Get todos from postgres");
     return todos;
   }
 
