@@ -8,21 +8,18 @@ import java.util.Properties;
 public class ConfigLoader {
   public static Map<String, String> load(Class<?> cls, String[] keys) {
     try (InputStream input = cls.getClassLoader().getResourceAsStream("db.properties")) {
-      Properties properties = new Properties();
-
       if (input == null) {
-        System.out.println("Sorry, unable to find db.properties");
         throw new RuntimeException("Database configuration is not set.");
       }
 
+      Properties properties = new Properties();
       properties.load(input);
 
       Map<String, String> config = new HashMap<>();
-
       for (String key : keys) {
         String value = properties.getProperty(key);
         if (value == null) {
-          throw new RuntimeException("Database configuration is not fully set.");
+          throw new RuntimeException("Config loader could not found key with name: " + key);
         }
         config.put(key, value);
       }
@@ -36,13 +33,11 @@ public class ConfigLoader {
 
   public static String load(Class<?> cls, String key) {
     try (InputStream input = cls.getClassLoader().getResourceAsStream("db.properties")) {
-      Properties properties = new Properties();
-
       if (input == null) {
-        System.out.println("Sorry, unable to find db.properties");
         throw new RuntimeException("Database configuration is not set.");
       }
 
+      Properties properties = new Properties();
       properties.load(input);
 
       return properties.getProperty(key);
