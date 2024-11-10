@@ -1,29 +1,28 @@
 package todolist.utils.database;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import todolist.utils.loader.ConfigLoader;
 
 public class DatabaseManagerImpl implements DatabaseManager {
-  private String url;
-  private String username;
-  private String password;
+  private final Map<String, String> connectionConfig;
 
-  private List<Connection> connectionPool; // 可用的連線
-  private List<Connection> usedConnections; // 已借出的連線
-  private static final int MAX_POOL_SIZE = 10;
+  private final List<Connection> connectionPool; // 可用的連線
+  private final List<Connection> usedConnections; // 已借出的連線
+  private final int MAX_POOL_SIZE = 10;
 
   private Timer healthCheckTimer;
 
   public DatabaseManagerImpl() {
-    loadDatabaseConfig();
+    connectionConfig = ConfigLoader.load(DatabaseManagerImpl.class,
+        new String[] { "db.url", "db.name", "db.password" });
+
     connectionPool = new ArrayList<>();
     usedConnections = new ArrayList<>();
 
@@ -34,30 +33,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
   }
 
-  private void loadDatabaseConfig() {
-    Properties properties = new Properties();
-    try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties")) {
-      if (input == null) {
-        System.out.println("Sorry, unable to find db.properties");
-        throw new RuntimeException("Database configuration is not set.");
-      }
-
-      properties.load(input);
-      url = properties.getProperty("db.url");
-      username = properties.getProperty("db.user");
-      password = properties.getProperty("db.password");
-
-      if (url == null || username == null || password == null) {
-        throw new RuntimeException("Database configuration is not fully set.");
-      }
-    } catch (IOException | RuntimeException ex) {
-      ex.printStackTrace();
-    }
-  }
-
   private Connection createConnection() {
     try {
-      return DriverManager.getConnection(url, username, password);
+      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.username"),
+          connectionConfig.get("db.password"));
     } catch (SQLException e) {
       e.printStackTrace();
       throw new RuntimeException("Failed to create a database connection.");

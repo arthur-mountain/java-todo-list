@@ -1,16 +1,16 @@
 package todolist.utils.database;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
+
+import todolist.utils.loader.ConfigLoader;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,21 +19,21 @@ import java.util.concurrent.TimeUnit;
 // 改用 ScheduledExecutorService 和 ReentrantLock 實作健康檢查和 lock 機制
 // 加上 MAX_IDLE_TIME_MS
 public class DatabaseManagerImplv4 implements DatabaseManager {
-  private String url;
-  private String username;
-  private String password;
+  private final Map<String, String> connectionConfig;
 
-  private List<Connection> connectionPool; // 可用的連線
-  private List<Connection> usedConnections; // 已借出的連線
-  private Map<Connection, Long> lastUsedTimestamps; // 跟蹤每個連線的最近使用時間
-  private static final int MAX_POOL_SIZE = 10;
-  private static final long MAX_IDLE_TIME_MS = 300000; // 閒置超過 5 分鐘自動釋放
+  private final List<Connection> connectionPool; // 可用的連線
+  private final List<Connection> usedConnections; // 已借出的連線
+  private final Map<Connection, Long> lastUsedTimestamps; // 跟蹤每個連線的最近使用時間
+  private final int MAX_POOL_SIZE = 10;
+  private final long MAX_IDLE_TIME_MS = 300000; // 閒置超過 5 分鐘自動釋放
 
   private final ReentrantLock lock = new ReentrantLock();
   private ScheduledExecutorService healthCheckExecutor;
 
   public DatabaseManagerImplv4() {
-    loadDatabaseConfig();
+    connectionConfig = ConfigLoader.load(DatabaseManagerImplv4.class,
+        new String[] { "db.url", "db.name", "db.password" });
+
     connectionPool = new ArrayList<>();
     usedConnections = new ArrayList<>();
     lastUsedTimestamps = new HashMap<>();
@@ -45,30 +45,10 @@ public class DatabaseManagerImplv4 implements DatabaseManager {
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
   }
 
-  private void loadDatabaseConfig() {
-    Properties properties = new Properties();
-    try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties")) {
-      if (input == null) {
-        System.out.println("Sorry, unable to find db.properties");
-        throw new RuntimeException("Database configuration is not set.");
-      }
-
-      properties.load(input);
-      url = properties.getProperty("db.url");
-      username = properties.getProperty("db.user");
-      password = properties.getProperty("db.password");
-
-      if (url == null || username == null || password == null) {
-        throw new RuntimeException("Database configuration is not fully set.");
-      }
-    } catch (IOException | RuntimeException ex) {
-      ex.printStackTrace();
-    }
-  }
-
   private Connection createConnection() {
     try {
-      return DriverManager.getConnection(url, username, password);
+      return DriverManager.getConnection(connectionConfig.get("db.url"), connectionConfig.get("db.username"),
+          connectionConfig.get("db.password"));
     } catch (SQLException e) {
       e.printStackTrace();
       throw new RuntimeException("Failed to create a database connection.");

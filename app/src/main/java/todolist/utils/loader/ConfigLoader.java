@@ -1,4 +1,4 @@
-package todolist.utils.config;
+package todolist.utils.loader;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -28,6 +28,24 @@ public class ConfigLoader {
       }
 
       return config;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      throw new RuntimeException("Error loading configuration.", ex);
+    }
+  }
+
+  public static String load(Class<?> cls, String key) {
+    try (InputStream input = cls.getClassLoader().getResourceAsStream("db.properties")) {
+      Properties properties = new Properties();
+
+      if (input == null) {
+        System.out.println("Sorry, unable to find db.properties");
+        throw new RuntimeException("Database configuration is not set.");
+      }
+
+      properties.load(input);
+
+      return properties.getProperty(key);
     } catch (Exception ex) {
       ex.printStackTrace();
       throw new RuntimeException("Error loading configuration.", ex);

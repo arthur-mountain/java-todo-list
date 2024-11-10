@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import todolist.utils.config.ConfigLoader;
+import todolist.utils.loader.ConfigLoader;
 
 // https://redis.io/docs/latest/develop/connect/clients/java/lettuce
 public class RedisManagerImpl implements RedisManager {
@@ -26,8 +26,7 @@ public class RedisManagerImpl implements RedisManager {
   private static final DefaultClientResources clientResources = DefaultClientResources.builder().build();
 
   private RedisManagerImpl() {
-    Map<String, String> config = ConfigLoader.load(RedisManagerImpl.class, new String[] { "redis.url" });
-    redisClient = RedisClient.create(clientResources, config.get("redis.url"));
+    redisClient = RedisClient.create(clientResources, ConfigLoader.load(RedisManagerImpl.class, "redis.url"));
 
     // Setting up Redis connection options
     redisClient.setOptions(ClientOptions.builder().autoReconnect(true).build());

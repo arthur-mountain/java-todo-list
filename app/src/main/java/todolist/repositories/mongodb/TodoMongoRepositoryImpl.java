@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import todolist.entities.TodoMongoEntity;
+import todolist.utils.loader.ConfigLoader;
 import todolist.utils.database.MongoManager;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class TodoMongoRepositoryImpl implements TodoMongoRepository {
   private final MongoManager mongoManager;
@@ -25,23 +23,7 @@ public class TodoMongoRepositoryImpl implements TodoMongoRepository {
   // 注入 MongoManager
   public TodoMongoRepositoryImpl(MongoManager mongoManager) {
     this.mongoManager = mongoManager;
-
-    Properties properties = new Properties();
-    try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
-      if (input == null) {
-        System.out.println("Unable to find db.properties");
-        throw new RuntimeException("Mongo configuration is not set.");
-      }
-
-      properties.load(input);
-      this.DATABASE_NAME = properties.getProperty("mongodb.db.name");
-
-      if (DATABASE_NAME == null) {
-        throw new RuntimeException("Mongo configuration is incomplete.");
-      }
-    } catch (IOException | RuntimeException ex) {
-      ex.printStackTrace();
-    }
+    this.DATABASE_NAME = ConfigLoader.load(TodoMongoRepositoryImpl.class, "mongodb.db.name");
   }
 
   private MongoCollection<Document> getTodosCollection() throws Exception {
