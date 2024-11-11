@@ -22,6 +22,10 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
 
+- [] with [kafka](https://kafka.apache.org).
+
+- [] with [kubernetes](https://kubernetes.io).
+
 ## Features
 
 1. GET:
