@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import todolist.entities.TodoMongoEntity;
 import todolist.utils.loader.ConfigLoader;
-import todolist.utils.database.MongoManager;
+import todolist.utils.database.mongo.MongoManager;
 
 public class TodoMongoRepositoryImpl implements TodoMongoRepository {
   private final MongoManager mongoManager;

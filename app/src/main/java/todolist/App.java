@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import todolist.utils.logger.LoggerImpl;
-import todolist.utils.database.DatabaseManagerImpl;
+import todolist.utils.database.postgres.DatabaseManagerImpl;
 import todolist.controllers.TodoController;
 import todolist.repositories.postgresql.TodoRepositoryImpl;
 import todolist.repositories.postgresql.TodoRepositoryWithRedisImpl;
 
-import todolist.utils.database.MongoManagerImpl;
+import todolist.utils.database.mongo.MongoManagerImpl;
 import todolist.controllers.TodoMongoController;
 import todolist.repositories.mongodb.TodoMongoRepositoryImpl;
 
@@ -48,8 +48,6 @@ public class App {
     // 建立上下文，初始化 `postgresql` manager ->
     // 注入 MongoManagerImpl, 初始化 todo postgresql with redis repository ->
     // 指定 URL 路徑和處理器 controller
-    server.createContext("/v3/todos", new TodoController(new TodoRepositoryWithRedisImpl(new DatabaseManagerImpl())));
-    // 指定 URL 路徑和處理器 controller with redis
     server.createContext("/v3/todos", new TodoController(new TodoRepositoryWithRedisImpl(new DatabaseManagerImpl())));
 
     // 設置執行緒池，null 表示默認執行緒池

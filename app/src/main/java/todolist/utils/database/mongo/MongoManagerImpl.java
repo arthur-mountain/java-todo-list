@@ -1,4 +1,4 @@
-package todolist.utils.database;
+package todolist.utils.database.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

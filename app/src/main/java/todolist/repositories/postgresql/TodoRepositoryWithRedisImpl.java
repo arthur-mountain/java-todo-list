@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import todolist.entities.TodoEntity;
-import todolist.utils.database.RedisManagerImpl;
-import todolist.utils.database.DatabaseManager;
-import todolist.utils.database.DatabaseConnection;
+import todolist.utils.database.redis.RedisManagerImpl;
+import todolist.utils.database.postgres.DatabaseManager;
+import todolist.utils.database.postgres.DatabaseConnection;
 import todolist.utils.json.Json;
 
 public class TodoRepositoryWithRedisImpl implements TodoRepository {

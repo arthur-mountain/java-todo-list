@@ -1,4 +1,4 @@
-package todolist.utils.database;
+package todolist.utils.database.redis;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.ClientOptions;

@@ -1,4 +1,4 @@
-package todolist.utils.database;
+package todolist.utils.database.redis;
 
 import java.util.List;
 import java.util.Map;

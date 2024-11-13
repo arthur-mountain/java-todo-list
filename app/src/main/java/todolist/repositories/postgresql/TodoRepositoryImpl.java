@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import todolist.entities.TodoEntity;
-import todolist.utils.database.DatabaseManager;
-import todolist.utils.database.DatabaseConnection;
+import todolist.utils.database.postgres.DatabaseManager;
+import todolist.utils.database.postgres.DatabaseConnection;
 
 public class TodoRepositoryImpl implements TodoRepository {
   private final DatabaseManager databaseManager;

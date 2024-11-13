@@ -22,7 +22,7 @@ import java.io.OutputStream;
 
 import todolist.controllers.TodoController;
 import todolist.entities.TodoEntity;
-import todolist.utils.database.DatabaseManagerImpl;
+import todolist.utils.database.postgres.DatabaseManagerImpl;
 import todolist.repositories.postgresql.TodoRepository;
 import todolist.repositories.postgresql.TodoRepositoryImpl;
 

@@ -1,4 +1,4 @@
-package todolist.utils.database;
+package todolist.utils.database.postgres;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
