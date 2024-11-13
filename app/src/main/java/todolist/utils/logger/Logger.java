@@ -8,4 +8,7 @@ public interface Logger {
   void error(String message);
 
   void debug(String message);
+
+  void trace(String message);
+
 }

@@ -25,6 +25,9 @@ dependencies {
     // Redis sync/async driver
     implementation(libs.lettuce)
 
+    // Apache kafka
+    implementation(libs.kafka)
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

@@ -7,6 +7,7 @@ gson = "2.11.0"
 postgresql = "42.7.4"
 mongodb-driver-sync = "5.2.0"
 lettuce = "6.5.0.RELEASE"
+kafka = "3.3.1"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -15,3 +16,4 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 mongodbDriverSync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver-sync" }
 lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+kafka = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }

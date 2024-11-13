@@ -1,0 +1,47 @@
+version: "3.9"
+
+x-kafka-base: &kafka-def
+  image: confluentinc/cp-kafka:latest
+  tty: true
+  stdin_open: true
+  env_file: .env
+
+services:
+  kafka-broker-1:
+    <<: *kafka-def
+    container_name: kafka-broker-1
+    environment:
+      KAFKA_BROKER_ID: $KAFKA_BROKER1_BROKER_ID
+      KAFKA_ADVERTISED_LISTENERS: $KAFKA_BROKER1_ADVERTISED_LISTENERS
+      KAFKA_LISTENERS: $KAFKA_BROKER1_LISTENERS
+    volumes:
+      - $KAFKA_BROKER1_LOCAL_VOLUME1:$KAFKA_LOG_DIRS
+      - $KAFKA_BROKER1_LOCAL_VOLUME2:$KAFKA_METADATA_LOG_DIR
+    ports:
+      - "$KAFKA_BROKER1_EXTERNAL_PORT:$KAFKA_BROKER1_EXTERNAL_PORT"
+
+  kafka-broker-2:
+    <<: *kafka-def
+    container_name: kafka-broker-2
+    environment:
+      KAFKA_BROKER_ID: $KAFKA_BROKER2_BROKER_ID
+      KAFKA_ADVERTISED_LISTENERS: $KAFKA_BROKER2_ADVERTISED_LISTENERS
+      KAFKA_LISTENERS: $KAFKA_BROKER2_LISTENERS
+    volumes:
+      - $KAFKA_BROKER2_LOCAL_VOLUME1:$KAFKA_LOG_DIRS
+      - $KAFKA_BROKER2_LOCAL_VOLUME2:$KAFKA_METADATA_LOG_DIR
+    ports:
+      - "$KAFKA_BROKER2_EXTERNAL_PORT:$KAFKA_BROKER2_EXTERNAL_PORT"
+
+  kafka-broker-3:
+    <<: *kafka-def
+    container_name: kafka-broker-3
+    environment:
+      KAFKA_BROKER_ID: $KAFKA_BROKER3_BROKER_ID
+      KAFKA_ADVERTISED_LISTENERS: $KAFKA_BROKER3_ADVERTISED_LISTENERS
+      KAFKA_LISTENERS: $KAFKA_BROKER3_LISTENERS
+    volumes:
+      - $KAFKA_BROKER3_LOCAL_VOLUME1:$KAFKA_LOG_DIRS
+      - $KAFKA_BROKER3_LOCAL_VOLUME2:$KAFKA_METADATA_LOG_DIR
+    ports:
+      - "$KAFKA_BROKER3_EXTERNAL_PORT:$KAFKA_BROKER3_EXTERNAL_PORT"

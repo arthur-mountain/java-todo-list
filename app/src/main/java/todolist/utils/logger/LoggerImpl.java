@@ -160,4 +160,9 @@ public class LoggerImpl implements Logger {
   public void debug(String message) {
     logger.fine(message);
   }
+
+  @Override
+  public void trace(String message) {
+    logger.finest(message);
+  }
 }
