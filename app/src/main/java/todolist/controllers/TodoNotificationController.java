@@ -14,19 +14,12 @@ import todolist.entities.TodoKafkaEntity;
 import todolist.utils.database.kafka.*;
 
 public class TodoNotificationController implements HttpHandler {
-  private final KafkaProducerManager producerManager = new KafkaProducerManagerImpl();
   private final KafkaConsumerManager consumerManager = new KafkaConsumerManagerImpl();
   private final String topic = "notification";
 
   public TodoNotificationController() {
     // Start consumer thread
-    new Thread(() -> {
-      try {
-        consumerManager.start(topic);
-      } catch (Exception e) {
-        e.printStackTrace(); // Log or handle exception
-      }
-    }).start();
+    consumerManager.start(topic);
   }
 
   @Override
@@ -61,7 +54,7 @@ public class TodoNotificationController implements HttpHandler {
     try (InputStream input = exchange.getRequestBody()) {
       String data = new String(input.readAllBytes(), StandardCharsets.UTF_8);
 
-      producerManager.sendMessage(topic, Json.fromJSON(data, TodoKafkaEntity.class).id, data);
+      KafkaProducerManagerImpl.getInstance().sendMessage(topic, Json.fromJSON(data, TodoKafkaEntity.class).id, data);
 
       byte[] responseBytes = Json.toBytes(Json.toJSON("ok"));
       exchange.sendResponseHeaders(201, responseBytes.length);
