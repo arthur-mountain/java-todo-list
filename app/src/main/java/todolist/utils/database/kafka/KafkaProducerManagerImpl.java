@@ -8,8 +8,9 @@ import todolist.utils.loader.ConfigLoader;
 import todolist.utils.logger.Logger;
 import todolist.utils.logger.LoggerImpl;
 
-// TODO: Fix kafka producer is no thread safe error
 public class KafkaProducerManagerImpl implements KafkaProducerManager {
+  // singleton instance
+  private static volatile KafkaProducerManagerImpl instance;
 
   private final KafkaProducer<String, String> producer;
   private final Logger logger;
@@ -19,7 +20,7 @@ public class KafkaProducerManagerImpl implements KafkaProducerManager {
    * 
    * @param bootstrapServers The Kafka bootstrap server address.
    */
-  public KafkaProducerManagerImpl() {
+  private KafkaProducerManagerImpl() {
     // Initialize logger
     logger = LoggerImpl.getInstance(KafkaProducerManagerImpl.class);
 
@@ -36,6 +37,17 @@ public class KafkaProducerManagerImpl implements KafkaProducerManager {
 
     // Clean up resources on JVM shutdown
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+  }
+
+  public static KafkaProducerManagerImpl getInstance() {
+    if (instance == null) {
+      synchronized (KafkaProducerManagerImpl.class) {
+        if (instance == null) {
+          instance = new KafkaProducerManagerImpl();
+        }
+      }
+    }
+    return instance;
   }
 
   @Override
