@@ -8,9 +8,36 @@ Before we start with Spring Framework, we need to understand the basics of how t
 
 It supports operations such as **creating**, **reading**, **updating**, and **deleting** to-do items using a RESTful API.
 
+## Requirements
+
+1. [docker](https://www.docker.com)
+
+2. java >= 21
+
+## Getting Started
+
+1. Run docker containers.
+
+```bash
+docker compose -f docker-compose.yaml -f docker-kafka.yaml up
+```
+
+2. Run java http server.
+
+```bash
+make run
+```
+
+3. Run java test
+
+```bash
+make test
+```
+
 ## TODOs
 
 - [x] CLI interactive to-do list using a variable-based, temporary in-memory storage.
+      -> app/src/main/java/todolistScanner.java
 
 - [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
@@ -22,11 +49,11 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
 
-- [x] with logging.
+- [x] with logging(JUL).
 
 - [x] with [kafka](https://kafka.apache.org).
 
-- [] with [kubernetes](https://kubernetes.io).
+- [ ] with [kubernetes](https://kubernetes.io).
 
 ## Features
 
@@ -48,6 +75,8 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 <details>
 <summary> <h4 style='display:inline;'>v1/todos -> PostgreSQL</h4> </summary>
+
+Entity -> **TodoEntity.java**
 
 - **GET**: `/v1/todos`
 
@@ -75,6 +104,8 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 <details>
 <summary> <h4 style='display:inline;'>v2/todos -> MongoDB</h4> </summary>
 
+Entity -> **TodoMongoEntity.java**
+
 - **GET**: `/v2/todos`
 
   - Response: JSON array of to-do items from MongoDB.
@@ -101,6 +132,8 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 <details>
 <summary> <h4 style='display:inline;'>v3/todos -> Redis + PostgreSQL</h4> </summary>
 
+Entity -> **TodoEntity.java**
+
 - **GET**: `/v3/todos`
 
   - Response: JSON array of to-do items, with Redis caching results from PostgreSQL.
@@ -121,6 +154,17 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - **DELETE**: `/v3/todos/{id}`
   - Response: Confirmation message or error if the ID is invalid, with the deletion applied only to PostgreSQL (no Redis caching).
+
+</details>
+
+<details>
+<summary> <h4 style='display:inline;'>v4/todos -> Kafka </h4> </summary>
+
+Entity -> **TodoKafkaEntity.java**
+
+- **POST**: `/v4/todos`
+
+  - Response: string
 
 </details>
 
