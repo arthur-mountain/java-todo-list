@@ -1,82 +1,83 @@
-# Java To-Do List
+# 📝 Java To-Do List
 
-My first Java implementation with todo list.
+My first Java implementation of a to-do list.
 
 Using the built-in HTTP server from the `com.sun.net.httpserver` package, we will implement CRUD operations.
 
-Before we start with Spring Framework, we need to understand the basics of how the HTTP server works in Java.
+Before we start with the Spring Framework,
+we need to understand the basics of how the HTTP server works in Java.
 
 It supports operations such as **creating**, **reading**, **updating**, and **deleting** to-do items using a RESTful API.
 
-## Requirements
+## 📋 Requirements
 
-1. [docker](https://www.docker.com)
+1. [Docker](https://www.docker.com)
 
-2. java >= 21
+2. Java >= 21
 
-## Getting Started
+## 🚀 Getting Started
 
-1. Run docker containers.
+1. Run Docker containers.
 
-```bash
-docker compose -f docker-compose.yaml -f docker-kafka.yaml up
-```
+   ```bash
+   docker compose -f docker-compose.yaml -f docker-kafka.yaml up
+   ```
 
-2. Run java http server.
+2. Run the Java HTTP server.
 
-```bash
-make run
-```
+   ```bash
+   make run
+   ```
 
-3. Run java test
+3. Run Java tests.
 
-```bash
-make test
-```
+   ```bash
+   make test
+   ```
 
-## TODOs
+## ✅ TODOs
 
-- [x] CLI interactive to-do list using a variable-based, temporary in-memory storage.
+- [x] CLI interactive to-do list using variable-based, temporary in-memory storage.
       -> app/src/main/java/todolistScanner.java
 
 - [x] HTTP server using a variable-based, temporary in-memory to-do list.
 
-- [x] setup docker.
+- [x] Set up Docker.
 
-- [x] with [PostgreSQL](https://www.postgresql.org).
+- [x] Integrate with [PostgreSQL](https://www.postgresql.org).
 
-- [x] with [MongoDB](https://www.mongodb.com).
+- [x] Integrate with [MongoDB](https://www.mongodb.com).
 
-- [x] with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
+- [x] Integrate with [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org).
 
-- [x] with logging(JUL).
+- [x] Implement logging (JUL).
 
-- [x] with [kafka](https://kafka.apache.org).
+- [x] Integrate with [Kafka](https://kafka.apache.org).
 
-- [ ] with [kubernetes](https://kubernetes.io).
+- [ ] Integrate with [Kubernetes](https://kubernetes.io).
 
-## Features
+## ✨ Features
 
-1. GET:
+1. **GET**:
 
    - Retrieve the list of all to-do items.
 
-   - Retrieve the to-do item with id.
+   - Retrieve a to-do item by its ID.
 
-2. POST: Add a new to-do item.
+2. **POST**: Add a new to-do item.
 
-3. PATCH: Update an existing to-do item by its ID.
+3. **PATCH**: Update an existing to-do item by its ID.
 
-4. DELETE: Remove a to-do item by its ID.
+4. **DELETE**: Remove a to-do item by its ID.
 
 5. Simple error handling for invalid requests and missing parameters.
 
-## Endpoints
+## 🔗 Endpoints
 
 <details>
-<summary> <h4 style='display:inline;'>v1/todos -> PostgreSQL</h4> </summary>
+<summary><h4 style='display:inline;'>🗄️ v1/todos -> PostgreSQL</h4></summary>
 
-Entity -> **TodoEntity.java**
+Entity: **TodoEntity.java**
 
 - **GET**: `/v1/todos`
 
@@ -97,14 +98,15 @@ Entity -> **TodoEntity.java**
   - Response: Confirmation message or error if the ID is invalid.
 
 - **DELETE**: `/v1/todos/{id}`
+
   - Response: Confirmation message or error if the ID is invalid.
 
 </details>
 
 <details>
-<summary> <h4 style='display:inline;'>v2/todos -> MongoDB</h4> </summary>
+<summary><h4 style='display:inline;'>🍃 v2/todos -> MongoDB</h4></summary>
 
-Entity -> **TodoMongoEntity.java**
+Entity: **TodoMongoEntity.java**
 
 - **GET**: `/v2/todos`
 
@@ -125,14 +127,15 @@ Entity -> **TodoMongoEntity.java**
   - Response: Confirmation message or error if the ID is invalid.
 
 - **DELETE**: `/v2/todos/{id}`
+
   - Response: Confirmation message or error if the ID is invalid.
 
 </details>
 
 <details>
-<summary> <h4 style='display:inline;'>v3/todos -> Redis + PostgreSQL</h4> </summary>
+<summary><h4 style='display:inline;'>🚀 v3/todos -> Redis + PostgreSQL</h4></summary>
 
-Entity -> **TodoEntity.java**
+Entity: **TodoEntity.java**
 
 - **GET**: `/v3/todos`
 
@@ -153,37 +156,40 @@ Entity -> **TodoEntity.java**
   - Response: Confirmation message or error if the ID is invalid, with the update applied only to PostgreSQL (no Redis caching).
 
 - **DELETE**: `/v3/todos/{id}`
+
   - Response: Confirmation message or error if the ID is invalid, with the deletion applied only to PostgreSQL (no Redis caching).
 
 </details>
 
 <details>
-<summary> <h4 style='display:inline;'>v4/todos -> Kafka </h4> </summary>
+<summary><h4 style='display:inline;'>📬 v4/todos -> Kafka</h4></summary>
 
-Entity -> **TodoKafkaEntity.java**
+Entity: **TodoKafkaEntity.java**
 
 - **POST**: `/v4/todos`
 
-  - Response: string
+  - Request Body: `{id: string, title: string, description: string, price: int}`
+
+  - Response: A string; consumes the message and prints it directly in the log.
 
 </details>
 
-## Success Response
+## 🎉 Success Response
 
-- 200 Success.
+- **200** Success.
 
-- 201 Created: New item added successfully.
+- **201 Created**: New item added successfully.
 
-## Error Handling
+## ❗ Error Handling
 
-- 400 Bad Request: Missing parameters or invalid input.
+- **400 Bad Request**: Missing parameters or invalid input.
 
-- 404 Not Found: Item not found based on provided ID.
+- **404 Not Found**: Item not found based on the provided ID.
 
-- 405 Method Not Allowed: Unsupported HTTP method.
+- **405 Method Not Allowed**: Unsupported HTTP method.
 
-## Licenses
+## ⚖️ Licenses
 
 This project is licensed under the [MIT License](LICENSE).
 
-The third-party licenses used in this project are listed in [THIRD-PARTY-LICENSE](THIRD-PARTY-LICENSE)
+The third-party licenses used in this project are listed in [THIRD-PARTY-LICENSE](THIRD-PARTY-LICENSE).
