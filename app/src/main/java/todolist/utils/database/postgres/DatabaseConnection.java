@@ -5,6 +5,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+// 主要為了 override with 自己的 close method 用來把 connection 釋放回 pool,
+// 這樣可以用在 try with resource 語法中
+// 所以不執行原生的 connection.close(), 避免把連線被直接關閉
+//
+// 其他 override methods 都是 fork 原生的 Connection class
 public class DatabaseConnection implements Connection {
   private final Connection connection;
   private final DatabaseManager databaseManager;
