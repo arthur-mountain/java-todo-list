@@ -24,7 +24,7 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] with logging.
 
-- [] with [kafka](https://kafka.apache.org).
+- [x] with [kafka](https://kafka.apache.org).
 
 - [] with [kubernetes](https://kubernetes.io).
 
