@@ -54,8 +54,6 @@ It supports operations such as **creating**, **reading**, **updating**, and **de
 
 - [x] Integrate with [Kafka](https://kafka.apache.org).
 
-- [ ] Integrate with [Kubernetes](https://kubernetes.io).
-
 ## ✨ Features
 
 1. **GET**:
