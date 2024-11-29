@@ -1,3 +1,12 @@
+CREATE TABLE IF NOT EXISTS todos (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100),
+    description VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed BOOLEAN DEFAULT FALSE
+);
+
 BEGIN;
 INSERT INTO todos (title, description) VALUES
 ('Learn SQL', 'Understand the basics of SQL'),

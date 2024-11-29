@@ -5,8 +5,7 @@ WORKDIR /prep
 COPY ./database ./database
 RUN mkdir docker-entrypoint && \
   cp \
-  ./database/schema/*.sql \
-  ./database/seeds/*.sql \
+  ./database/*.sql \
   ./database/migrations/*.sql \
   ./docker-entrypoint
 
